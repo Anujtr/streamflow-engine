@@ -37,7 +37,15 @@ func (t *Topic) GetPartition(key string) int32 {
 
 	hasher := fnv.New32a()
 	hasher.Write([]byte(key))
-	return int32(hasher.Sum32()) % t.NumPartitions
+	hash := hasher.Sum32()
+	
+	// Ensure positive result for modulo operation
+	partition := int32(hash % uint32(t.NumPartitions))
+	if partition < 0 {
+		partition = -partition
+	}
+	
+	return partition
 }
 
 func (t *Topic) Produce(msg *Message) (int32, int64, error) {

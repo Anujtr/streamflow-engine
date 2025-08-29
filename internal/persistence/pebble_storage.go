@@ -8,7 +8,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/Anujtr/streamflow-engine/internal/storage"
 	"github.com/cockroachdb/pebble"
 )
 
@@ -58,8 +57,19 @@ func (ps *PebbleStorage) Close() error {
 	return ps.db.Close()
 }
 
+// GetDB returns the underlying Pebble database instance
+func (ps *PebbleStorage) GetDB() *pebble.DB {
+	return ps.db
+}
+
+// Message represents a message in persistent storage
+type Message struct {
+	Key   string
+	Value []byte
+}
+
 // Append appends a message to a partition and returns the assigned offset
-func (ps *PebbleStorage) Append(topicName string, partition int32, msg *storage.Message) (int64, error) {
+func (ps *PebbleStorage) Append(topicName string, partition int32, msg *Message) (int64, error) {
 	ps.mu.RLock()
 	defer ps.mu.RUnlock()
 
@@ -114,7 +124,7 @@ func (ps *PebbleStorage) Append(topicName string, partition int32, msg *storage.
 }
 
 // Read reads messages from a partition starting at the given offset
-func (ps *PebbleStorage) Read(topicName string, partition int32, offset int64, maxMessages int32) ([]*storage.Message, bool, error) {
+func (ps *PebbleStorage) Read(topicName string, partition int32, offset int64, maxMessages int32) ([]*Message, bool, error) {
 	ps.mu.RLock()
 	defer ps.mu.RUnlock()
 
@@ -122,7 +132,7 @@ func (ps *PebbleStorage) Read(topicName string, partition int32, offset int64, m
 		return nil, false, fmt.Errorf("storage is closed")
 	}
 
-	var messages []*storage.Message
+	var messages []*Message
 	count := int32(0)
 	
 	// Create iterator for the partition range
@@ -144,7 +154,7 @@ func (ps *PebbleStorage) Read(topicName string, partition int32, offset int64, m
 			continue // Skip corrupted messages
 		}
 
-		messages = append(messages, &storage.Message{
+		messages = append(messages, &Message{
 			Key:   msg.Key,
 			Value: msg.Value,
 		})

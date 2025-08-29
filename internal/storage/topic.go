@@ -4,13 +4,25 @@ import (
 	"fmt"
 	"hash/fnv"
 	"sync"
+
+	"github.com/Anujtr/streamflow-engine/internal/persistence"
 )
+
+// PartitionInterface defines the interface that both in-memory and persistent partitions implement
+type PartitionInterface interface {
+	Append(msg *Message) int64
+	Read(offset int64, maxMessages int32) ([]*Message, bool)
+	Size() int
+	GetNextOffset() int64
+}
 
 type Topic struct {
 	Name       string
-	Partitions map[int32]*Partition
+	Partitions map[int32]PartitionInterface
 	NumPartitions int32
 	mu         sync.RWMutex
+	persistenceMode bool
+	storage    *persistence.PebbleStorage
 }
 
 func NewTopic(name string, numPartitions int32) *Topic {
@@ -18,15 +30,36 @@ func NewTopic(name string, numPartitions int32) *Topic {
 		numPartitions = 1
 	}
 
-	partitions := make(map[int32]*Partition)
+	partitions := make(map[int32]PartitionInterface)
 	for i := int32(0); i < numPartitions; i++ {
 		partitions[i] = NewPartition(i)
 	}
 
 	return &Topic{
-		Name:          name,
-		Partitions:    partitions,
-		NumPartitions: numPartitions,
+		Name:            name,
+		Partitions:      partitions,
+		NumPartitions:   numPartitions,
+		persistenceMode: false,
+	}
+}
+
+// NewPersistentTopic creates a new topic with persistent partitions
+func NewPersistentTopic(name string, numPartitions int32, storage *persistence.PebbleStorage) *Topic {
+	if numPartitions <= 0 {
+		numPartitions = 1
+	}
+
+	partitions := make(map[int32]PartitionInterface)
+	for i := int32(0); i < numPartitions; i++ {
+		partitions[i] = NewPersistentPartition(i, name, storage)
+	}
+
+	return &Topic{
+		Name:            name,
+		Partitions:      partitions,
+		NumPartitions:   numPartitions,
+		persistenceMode: true,
+		storage:         storage,
 	}
 }
 
@@ -57,7 +90,12 @@ func (t *Topic) AddPartition(partitionID int32) error {
 		return fmt.Errorf("partition %d already exists", partitionID)
 	}
 
-	t.Partitions[partitionID] = NewPartition(partitionID)
+	if t.persistenceMode && t.storage != nil {
+		t.Partitions[partitionID] = NewPersistentPartition(partitionID, t.Name, t.storage)
+	} else {
+		t.Partitions[partitionID] = NewPartition(partitionID)
+	}
+	
 	if partitionID >= t.NumPartitions {
 		t.NumPartitions = partitionID + 1
 	}

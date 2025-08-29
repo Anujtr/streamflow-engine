@@ -11,12 +11,14 @@ import (
 
 	pb "github.com/Anujtr/streamflow-engine/api/proto"
 	"github.com/Anujtr/streamflow-engine/internal/api"
+	"github.com/Anujtr/streamflow-engine/internal/coordination"
+	"github.com/Anujtr/streamflow-engine/internal/partitioning"
 	"github.com/Anujtr/streamflow-engine/internal/storage"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
 
-const Version = "1.0.0-phase1"
+const Version = "2.0.0-phase2"
 
 func main() {
 	var (
@@ -28,12 +30,22 @@ func main() {
 	// Create storage
 	store := storage.NewStorage()
 
-	// Create server
-	server := api.NewServer(store, Version)
+	// Create partition manager
+	partitionManager := partitioning.NewPartitionManager(store)
+
+	// Create consumer group coordinator
+	consumerCoordinator := coordination.NewConsumerGroupCoordinator()
+
+	// Create servers
+	messageServer := api.NewServer(store, Version)
+	partitionServer := api.NewPartitionServer(partitionManager)
+	consumerGroupServer := api.NewConsumerGroupServer(consumerCoordinator)
 
 	// Create gRPC server
 	grpcServer := grpc.NewServer()
-	pb.RegisterMessageServiceServer(grpcServer, server)
+	pb.RegisterMessageServiceServer(grpcServer, messageServer)
+	pb.RegisterPartitionServiceServer(grpcServer, partitionServer)
+	pb.RegisterConsumerGroupServiceServer(grpcServer, consumerGroupServer)
 
 	// Enable reflection for easier debugging
 	reflection.Register(grpcServer)
@@ -62,6 +74,10 @@ func main() {
 	log.Println("Shutting down gracefully...")
 
 	// Graceful shutdown
+	log.Println("Stopping consumer coordinator...")
+	consumerCoordinator.Stop()
+	
+	log.Println("Stopping gRPC server...")
 	grpcServer.GracefulStop()
 	log.Println("Server stopped")
 }

@@ -12,6 +12,20 @@ service MessageService {
   rpc Health(HealthRequest) returns (HealthResponse);
 }
 
+service PartitionService {
+  rpc ListPartitions(ListPartitionsRequest) returns (ListPartitionsResponse);
+  rpc RebalancePartitions(RebalanceRequest) returns (RebalanceResponse);
+  rpc GetPartitionMetrics(PartitionMetricsRequest) returns (PartitionMetricsResponse);
+  rpc ScalePartitions(ScalePartitionsRequest) returns (ScalePartitionsResponse);
+}
+
+service ConsumerGroupService {
+  rpc JoinGroup(JoinGroupRequest) returns (JoinGroupResponse);
+  rpc LeaveGroup(LeaveGroupRequest) returns (LeaveGroupResponse);
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+  rpc GetGroupInfo(GroupInfoRequest) returns (GroupInfoResponse);
+}
+
 message Message {
   string key = 1;
   bytes value = 2;
@@ -55,4 +69,118 @@ message HealthResponse {
   string status = 1;
   string version = 2;
   map<string, string> metrics = 3;
+}
+
+// Partition Management Messages
+message ListPartitionsRequest {
+  string topic = 1;
+}
+
+message ListPartitionsResponse {
+  repeated PartitionInfo partitions = 1;
+}
+
+message PartitionInfo {
+  int32 partition_id = 1;
+  int64 message_count = 2;
+  int64 bytes_stored = 3;
+  google.protobuf.Timestamp last_activity = 4;
+  string leader = 5;
+}
+
+message RebalanceRequest {
+  string topic = 1;
+  string strategy = 2; // "round_robin", "range", etc.
+}
+
+message RebalanceResponse {
+  bool success = 1;
+  string message = 2;
+  map<int32, string> partition_assignments = 3; // partition -> consumer
+}
+
+message PartitionMetricsRequest {
+  string topic = 1;
+  int32 partition_id = 2; // -1 for all partitions
+}
+
+message PartitionMetricsResponse {
+  repeated PartitionMetrics metrics = 1;
+}
+
+message PartitionMetrics {
+  int32 partition_id = 1;
+  int64 message_count = 2;
+  int64 bytes_stored = 3;
+  double produce_rate = 4;
+  double consume_rate = 5;
+  google.protobuf.Timestamp last_activity = 6;
+}
+
+message ScalePartitionsRequest {
+  string topic = 1;
+  int32 new_partition_count = 2;
+}
+
+message ScalePartitionsResponse {
+  bool success = 1;
+  string message = 2;
+  int32 old_count = 3;
+  int32 new_count = 4;
+}
+
+// Consumer Group Messages
+message JoinGroupRequest {
+  string consumer_id = 1;
+  string group_id = 2;
+  repeated string topics = 3;
+  int32 session_timeout_ms = 4;
+  map<string, string> metadata = 5;
+}
+
+message JoinGroupResponse {
+  bool success = 1;
+  string message = 2;
+  repeated int32 assigned_partitions = 3;
+  string group_state = 4;
+}
+
+message LeaveGroupRequest {
+  string consumer_id = 1;
+}
+
+message LeaveGroupResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message HeartbeatRequest {
+  string consumer_id = 1;
+}
+
+message HeartbeatResponse {
+  bool success = 1;
+  string message = 2;
+  bool should_rebalance = 3;
+}
+
+message GroupInfoRequest {
+  string group_id = 1;
+}
+
+message GroupInfoResponse {
+  string group_id = 1;
+  string state = 2;
+  repeated ConsumerMember members = 3;
+  repeated string topics = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp last_rebalance = 6;
+}
+
+message ConsumerMember {
+  string consumer_id = 1;
+  repeated int32 assigned_partitions = 2;
+  string state = 3;
+  google.protobuf.Timestamp last_heartbeat = 4;
+  map<string, string> metadata = 5;
 }

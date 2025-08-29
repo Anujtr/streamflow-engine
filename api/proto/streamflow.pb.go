@@ -486,6 +486,1132 @@ func (x *HealthResponse) GetMetrics() map[string]string {
 	return nil
 }
 
+// Partition Management Messages
+type ListPartitionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Topic         string                 `protobuf:"bytes,1,opt,name=topic,proto3" json:"topic,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListPartitionsRequest) Reset() {
+	*x = ListPartitionsRequest{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListPartitionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListPartitionsRequest) ProtoMessage() {}
+
+func (x *ListPartitionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListPartitionsRequest.ProtoReflect.Descriptor instead.
+func (*ListPartitionsRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ListPartitionsRequest) GetTopic() string {
+	if x != nil {
+		return x.Topic
+	}
+	return ""
+}
+
+type ListPartitionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Partitions    []*PartitionInfo       `protobuf:"bytes,1,rep,name=partitions,proto3" json:"partitions,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListPartitionsResponse) Reset() {
+	*x = ListPartitionsResponse{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListPartitionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListPartitionsResponse) ProtoMessage() {}
+
+func (x *ListPartitionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListPartitionsResponse.ProtoReflect.Descriptor instead.
+func (*ListPartitionsResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ListPartitionsResponse) GetPartitions() []*PartitionInfo {
+	if x != nil {
+		return x.Partitions
+	}
+	return nil
+}
+
+type PartitionInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PartitionId   int32                  `protobuf:"varint,1,opt,name=partition_id,json=partitionId,proto3" json:"partition_id,omitempty"`
+	MessageCount  int64                  `protobuf:"varint,2,opt,name=message_count,json=messageCount,proto3" json:"message_count,omitempty"`
+	BytesStored   int64                  `protobuf:"varint,3,opt,name=bytes_stored,json=bytesStored,proto3" json:"bytes_stored,omitempty"`
+	LastActivity  *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=last_activity,json=lastActivity,proto3" json:"last_activity,omitempty"`
+	Leader        string                 `protobuf:"bytes,5,opt,name=leader,proto3" json:"leader,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PartitionInfo) Reset() {
+	*x = PartitionInfo{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartitionInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartitionInfo) ProtoMessage() {}
+
+func (x *PartitionInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartitionInfo.ProtoReflect.Descriptor instead.
+func (*PartitionInfo) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *PartitionInfo) GetPartitionId() int32 {
+	if x != nil {
+		return x.PartitionId
+	}
+	return 0
+}
+
+func (x *PartitionInfo) GetMessageCount() int64 {
+	if x != nil {
+		return x.MessageCount
+	}
+	return 0
+}
+
+func (x *PartitionInfo) GetBytesStored() int64 {
+	if x != nil {
+		return x.BytesStored
+	}
+	return 0
+}
+
+func (x *PartitionInfo) GetLastActivity() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastActivity
+	}
+	return nil
+}
+
+func (x *PartitionInfo) GetLeader() string {
+	if x != nil {
+		return x.Leader
+	}
+	return ""
+}
+
+type RebalanceRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Topic         string                 `protobuf:"bytes,1,opt,name=topic,proto3" json:"topic,omitempty"`
+	Strategy      string                 `protobuf:"bytes,2,opt,name=strategy,proto3" json:"strategy,omitempty"` // "round_robin", "range", etc.
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RebalanceRequest) Reset() {
+	*x = RebalanceRequest{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RebalanceRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RebalanceRequest) ProtoMessage() {}
+
+func (x *RebalanceRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RebalanceRequest.ProtoReflect.Descriptor instead.
+func (*RebalanceRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *RebalanceRequest) GetTopic() string {
+	if x != nil {
+		return x.Topic
+	}
+	return ""
+}
+
+func (x *RebalanceRequest) GetStrategy() string {
+	if x != nil {
+		return x.Strategy
+	}
+	return ""
+}
+
+type RebalanceResponse struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	Success              bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message              string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	PartitionAssignments map[int32]string       `protobuf:"bytes,3,rep,name=partition_assignments,json=partitionAssignments,proto3" json:"partition_assignments,omitempty" protobuf_key:"varint,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // partition -> consumer
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *RebalanceResponse) Reset() {
+	*x = RebalanceResponse{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RebalanceResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RebalanceResponse) ProtoMessage() {}
+
+func (x *RebalanceResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RebalanceResponse.ProtoReflect.Descriptor instead.
+func (*RebalanceResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *RebalanceResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *RebalanceResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *RebalanceResponse) GetPartitionAssignments() map[int32]string {
+	if x != nil {
+		return x.PartitionAssignments
+	}
+	return nil
+}
+
+type PartitionMetricsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Topic         string                 `protobuf:"bytes,1,opt,name=topic,proto3" json:"topic,omitempty"`
+	PartitionId   int32                  `protobuf:"varint,2,opt,name=partition_id,json=partitionId,proto3" json:"partition_id,omitempty"` // -1 for all partitions
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PartitionMetricsRequest) Reset() {
+	*x = PartitionMetricsRequest{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartitionMetricsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartitionMetricsRequest) ProtoMessage() {}
+
+func (x *PartitionMetricsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartitionMetricsRequest.ProtoReflect.Descriptor instead.
+func (*PartitionMetricsRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *PartitionMetricsRequest) GetTopic() string {
+	if x != nil {
+		return x.Topic
+	}
+	return ""
+}
+
+func (x *PartitionMetricsRequest) GetPartitionId() int32 {
+	if x != nil {
+		return x.PartitionId
+	}
+	return 0
+}
+
+type PartitionMetricsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Metrics       []*PartitionMetrics    `protobuf:"bytes,1,rep,name=metrics,proto3" json:"metrics,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PartitionMetricsResponse) Reset() {
+	*x = PartitionMetricsResponse{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartitionMetricsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartitionMetricsResponse) ProtoMessage() {}
+
+func (x *PartitionMetricsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartitionMetricsResponse.ProtoReflect.Descriptor instead.
+func (*PartitionMetricsResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *PartitionMetricsResponse) GetMetrics() []*PartitionMetrics {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
+type PartitionMetrics struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PartitionId   int32                  `protobuf:"varint,1,opt,name=partition_id,json=partitionId,proto3" json:"partition_id,omitempty"`
+	MessageCount  int64                  `protobuf:"varint,2,opt,name=message_count,json=messageCount,proto3" json:"message_count,omitempty"`
+	BytesStored   int64                  `protobuf:"varint,3,opt,name=bytes_stored,json=bytesStored,proto3" json:"bytes_stored,omitempty"`
+	ProduceRate   float64                `protobuf:"fixed64,4,opt,name=produce_rate,json=produceRate,proto3" json:"produce_rate,omitempty"`
+	ConsumeRate   float64                `protobuf:"fixed64,5,opt,name=consume_rate,json=consumeRate,proto3" json:"consume_rate,omitempty"`
+	LastActivity  *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=last_activity,json=lastActivity,proto3" json:"last_activity,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PartitionMetrics) Reset() {
+	*x = PartitionMetrics{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartitionMetrics) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartitionMetrics) ProtoMessage() {}
+
+func (x *PartitionMetrics) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PartitionMetrics.ProtoReflect.Descriptor instead.
+func (*PartitionMetrics) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *PartitionMetrics) GetPartitionId() int32 {
+	if x != nil {
+		return x.PartitionId
+	}
+	return 0
+}
+
+func (x *PartitionMetrics) GetMessageCount() int64 {
+	if x != nil {
+		return x.MessageCount
+	}
+	return 0
+}
+
+func (x *PartitionMetrics) GetBytesStored() int64 {
+	if x != nil {
+		return x.BytesStored
+	}
+	return 0
+}
+
+func (x *PartitionMetrics) GetProduceRate() float64 {
+	if x != nil {
+		return x.ProduceRate
+	}
+	return 0
+}
+
+func (x *PartitionMetrics) GetConsumeRate() float64 {
+	if x != nil {
+		return x.ConsumeRate
+	}
+	return 0
+}
+
+func (x *PartitionMetrics) GetLastActivity() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastActivity
+	}
+	return nil
+}
+
+type ScalePartitionsRequest struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Topic             string                 `protobuf:"bytes,1,opt,name=topic,proto3" json:"topic,omitempty"`
+	NewPartitionCount int32                  `protobuf:"varint,2,opt,name=new_partition_count,json=newPartitionCount,proto3" json:"new_partition_count,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ScalePartitionsRequest) Reset() {
+	*x = ScalePartitionsRequest{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ScalePartitionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScalePartitionsRequest) ProtoMessage() {}
+
+func (x *ScalePartitionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScalePartitionsRequest.ProtoReflect.Descriptor instead.
+func (*ScalePartitionsRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *ScalePartitionsRequest) GetTopic() string {
+	if x != nil {
+		return x.Topic
+	}
+	return ""
+}
+
+func (x *ScalePartitionsRequest) GetNewPartitionCount() int32 {
+	if x != nil {
+		return x.NewPartitionCount
+	}
+	return 0
+}
+
+type ScalePartitionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	OldCount      int32                  `protobuf:"varint,3,opt,name=old_count,json=oldCount,proto3" json:"old_count,omitempty"`
+	NewCount      int32                  `protobuf:"varint,4,opt,name=new_count,json=newCount,proto3" json:"new_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ScalePartitionsResponse) Reset() {
+	*x = ScalePartitionsResponse{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ScalePartitionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScalePartitionsResponse) ProtoMessage() {}
+
+func (x *ScalePartitionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScalePartitionsResponse.ProtoReflect.Descriptor instead.
+func (*ScalePartitionsResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *ScalePartitionsResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *ScalePartitionsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *ScalePartitionsResponse) GetOldCount() int32 {
+	if x != nil {
+		return x.OldCount
+	}
+	return 0
+}
+
+func (x *ScalePartitionsResponse) GetNewCount() int32 {
+	if x != nil {
+		return x.NewCount
+	}
+	return 0
+}
+
+// Consumer Group Messages
+type JoinGroupRequest struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	ConsumerId       string                 `protobuf:"bytes,1,opt,name=consumer_id,json=consumerId,proto3" json:"consumer_id,omitempty"`
+	GroupId          string                 `protobuf:"bytes,2,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	Topics           []string               `protobuf:"bytes,3,rep,name=topics,proto3" json:"topics,omitempty"`
+	SessionTimeoutMs int32                  `protobuf:"varint,4,opt,name=session_timeout_ms,json=sessionTimeoutMs,proto3" json:"session_timeout_ms,omitempty"`
+	Metadata         map[string]string      `protobuf:"bytes,5,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *JoinGroupRequest) Reset() {
+	*x = JoinGroupRequest{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JoinGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JoinGroupRequest) ProtoMessage() {}
+
+func (x *JoinGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JoinGroupRequest.ProtoReflect.Descriptor instead.
+func (*JoinGroupRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *JoinGroupRequest) GetConsumerId() string {
+	if x != nil {
+		return x.ConsumerId
+	}
+	return ""
+}
+
+func (x *JoinGroupRequest) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+func (x *JoinGroupRequest) GetTopics() []string {
+	if x != nil {
+		return x.Topics
+	}
+	return nil
+}
+
+func (x *JoinGroupRequest) GetSessionTimeoutMs() int32 {
+	if x != nil {
+		return x.SessionTimeoutMs
+	}
+	return 0
+}
+
+func (x *JoinGroupRequest) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+type JoinGroupResponse struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Success            bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message            string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	AssignedPartitions []int32                `protobuf:"varint,3,rep,packed,name=assigned_partitions,json=assignedPartitions,proto3" json:"assigned_partitions,omitempty"`
+	GroupState         string                 `protobuf:"bytes,4,opt,name=group_state,json=groupState,proto3" json:"group_state,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *JoinGroupResponse) Reset() {
+	*x = JoinGroupResponse{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *JoinGroupResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*JoinGroupResponse) ProtoMessage() {}
+
+func (x *JoinGroupResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use JoinGroupResponse.ProtoReflect.Descriptor instead.
+func (*JoinGroupResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *JoinGroupResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *JoinGroupResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *JoinGroupResponse) GetAssignedPartitions() []int32 {
+	if x != nil {
+		return x.AssignedPartitions
+	}
+	return nil
+}
+
+func (x *JoinGroupResponse) GetGroupState() string {
+	if x != nil {
+		return x.GroupState
+	}
+	return ""
+}
+
+type LeaveGroupRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ConsumerId    string                 `protobuf:"bytes,1,opt,name=consumer_id,json=consumerId,proto3" json:"consumer_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LeaveGroupRequest) Reset() {
+	*x = LeaveGroupRequest{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LeaveGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LeaveGroupRequest) ProtoMessage() {}
+
+func (x *LeaveGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LeaveGroupRequest.ProtoReflect.Descriptor instead.
+func (*LeaveGroupRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *LeaveGroupRequest) GetConsumerId() string {
+	if x != nil {
+		return x.ConsumerId
+	}
+	return ""
+}
+
+type LeaveGroupResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LeaveGroupResponse) Reset() {
+	*x = LeaveGroupResponse{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LeaveGroupResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LeaveGroupResponse) ProtoMessage() {}
+
+func (x *LeaveGroupResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LeaveGroupResponse.ProtoReflect.Descriptor instead.
+func (*LeaveGroupResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *LeaveGroupResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *LeaveGroupResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type HeartbeatRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ConsumerId    string                 `protobuf:"bytes,1,opt,name=consumer_id,json=consumerId,proto3" json:"consumer_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HeartbeatRequest) Reset() {
+	*x = HeartbeatRequest{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HeartbeatRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeartbeatRequest) ProtoMessage() {}
+
+func (x *HeartbeatRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeartbeatRequest.ProtoReflect.Descriptor instead.
+func (*HeartbeatRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *HeartbeatRequest) GetConsumerId() string {
+	if x != nil {
+		return x.ConsumerId
+	}
+	return ""
+}
+
+type HeartbeatResponse struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Success         bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message         string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	ShouldRebalance bool                   `protobuf:"varint,3,opt,name=should_rebalance,json=shouldRebalance,proto3" json:"should_rebalance,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *HeartbeatResponse) Reset() {
+	*x = HeartbeatResponse{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HeartbeatResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HeartbeatResponse) ProtoMessage() {}
+
+func (x *HeartbeatResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HeartbeatResponse.ProtoReflect.Descriptor instead.
+func (*HeartbeatResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *HeartbeatResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *HeartbeatResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *HeartbeatResponse) GetShouldRebalance() bool {
+	if x != nil {
+		return x.ShouldRebalance
+	}
+	return false
+}
+
+type GroupInfoRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GroupId       string                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GroupInfoRequest) Reset() {
+	*x = GroupInfoRequest{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GroupInfoRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroupInfoRequest) ProtoMessage() {}
+
+func (x *GroupInfoRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroupInfoRequest.ProtoReflect.Descriptor instead.
+func (*GroupInfoRequest) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *GroupInfoRequest) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+type GroupInfoResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	GroupId       string                 `protobuf:"bytes,1,opt,name=group_id,json=groupId,proto3" json:"group_id,omitempty"`
+	State         string                 `protobuf:"bytes,2,opt,name=state,proto3" json:"state,omitempty"`
+	Members       []*ConsumerMember      `protobuf:"bytes,3,rep,name=members,proto3" json:"members,omitempty"`
+	Topics        []string               `protobuf:"bytes,4,rep,name=topics,proto3" json:"topics,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	LastRebalance *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=last_rebalance,json=lastRebalance,proto3" json:"last_rebalance,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GroupInfoResponse) Reset() {
+	*x = GroupInfoResponse{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GroupInfoResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GroupInfoResponse) ProtoMessage() {}
+
+func (x *GroupInfoResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GroupInfoResponse.ProtoReflect.Descriptor instead.
+func (*GroupInfoResponse) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *GroupInfoResponse) GetGroupId() string {
+	if x != nil {
+		return x.GroupId
+	}
+	return ""
+}
+
+func (x *GroupInfoResponse) GetState() string {
+	if x != nil {
+		return x.State
+	}
+	return ""
+}
+
+func (x *GroupInfoResponse) GetMembers() []*ConsumerMember {
+	if x != nil {
+		return x.Members
+	}
+	return nil
+}
+
+func (x *GroupInfoResponse) GetTopics() []string {
+	if x != nil {
+		return x.Topics
+	}
+	return nil
+}
+
+func (x *GroupInfoResponse) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *GroupInfoResponse) GetLastRebalance() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastRebalance
+	}
+	return nil
+}
+
+type ConsumerMember struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	ConsumerId         string                 `protobuf:"bytes,1,opt,name=consumer_id,json=consumerId,proto3" json:"consumer_id,omitempty"`
+	AssignedPartitions []int32                `protobuf:"varint,2,rep,packed,name=assigned_partitions,json=assignedPartitions,proto3" json:"assigned_partitions,omitempty"`
+	State              string                 `protobuf:"bytes,3,opt,name=state,proto3" json:"state,omitempty"`
+	LastHeartbeat      *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=last_heartbeat,json=lastHeartbeat,proto3" json:"last_heartbeat,omitempty"`
+	Metadata           map[string]string      `protobuf:"bytes,5,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *ConsumerMember) Reset() {
+	*x = ConsumerMember{}
+	mi := &file_api_proto_streamflow_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConsumerMember) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConsumerMember) ProtoMessage() {}
+
+func (x *ConsumerMember) ProtoReflect() protoreflect.Message {
+	mi := &file_api_proto_streamflow_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConsumerMember.ProtoReflect.Descriptor instead.
+func (*ConsumerMember) Descriptor() ([]byte, []int) {
+	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *ConsumerMember) GetConsumerId() string {
+	if x != nil {
+		return x.ConsumerId
+	}
+	return ""
+}
+
+func (x *ConsumerMember) GetAssignedPartitions() []int32 {
+	if x != nil {
+		return x.AssignedPartitions
+	}
+	return nil
+}
+
+func (x *ConsumerMember) GetState() string {
+	if x != nil {
+		return x.State
+	}
+	return ""
+}
+
+func (x *ConsumerMember) GetLastHeartbeat() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastHeartbeat
+	}
+	return nil
+}
+
+func (x *ConsumerMember) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
 var File_api_proto_streamflow_proto protoreflect.FileDescriptor
 
 const file_api_proto_streamflow_proto_rawDesc = "" +
@@ -523,11 +1649,113 @@ const file_api_proto_streamflow_proto_rawDesc = "" +
 	"\ametrics\x18\x03 \x03(\v2*.streamflow.v1.HealthResponse.MetricsEntryR\ametrics\x1a:\n" +
 	"\fMetricsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"-\n" +
+	"\x15ListPartitionsRequest\x12\x14\n" +
+	"\x05topic\x18\x01 \x01(\tR\x05topic\"V\n" +
+	"\x16ListPartitionsResponse\x12<\n" +
+	"\n" +
+	"partitions\x18\x01 \x03(\v2\x1c.streamflow.v1.PartitionInfoR\n" +
+	"partitions\"\xd3\x01\n" +
+	"\rPartitionInfo\x12!\n" +
+	"\fpartition_id\x18\x01 \x01(\x05R\vpartitionId\x12#\n" +
+	"\rmessage_count\x18\x02 \x01(\x03R\fmessageCount\x12!\n" +
+	"\fbytes_stored\x18\x03 \x01(\x03R\vbytesStored\x12?\n" +
+	"\rlast_activity\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\flastActivity\x12\x16\n" +
+	"\x06leader\x18\x05 \x01(\tR\x06leader\"D\n" +
+	"\x10RebalanceRequest\x12\x14\n" +
+	"\x05topic\x18\x01 \x01(\tR\x05topic\x12\x1a\n" +
+	"\bstrategy\x18\x02 \x01(\tR\bstrategy\"\x81\x02\n" +
+	"\x11RebalanceResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12o\n" +
+	"\x15partition_assignments\x18\x03 \x03(\v2:.streamflow.v1.RebalanceResponse.PartitionAssignmentsEntryR\x14partitionAssignments\x1aG\n" +
+	"\x19PartitionAssignmentsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\x05R\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"R\n" +
+	"\x17PartitionMetricsRequest\x12\x14\n" +
+	"\x05topic\x18\x01 \x01(\tR\x05topic\x12!\n" +
+	"\fpartition_id\x18\x02 \x01(\x05R\vpartitionId\"U\n" +
+	"\x18PartitionMetricsResponse\x129\n" +
+	"\ametrics\x18\x01 \x03(\v2\x1f.streamflow.v1.PartitionMetricsR\ametrics\"\x84\x02\n" +
+	"\x10PartitionMetrics\x12!\n" +
+	"\fpartition_id\x18\x01 \x01(\x05R\vpartitionId\x12#\n" +
+	"\rmessage_count\x18\x02 \x01(\x03R\fmessageCount\x12!\n" +
+	"\fbytes_stored\x18\x03 \x01(\x03R\vbytesStored\x12!\n" +
+	"\fproduce_rate\x18\x04 \x01(\x01R\vproduceRate\x12!\n" +
+	"\fconsume_rate\x18\x05 \x01(\x01R\vconsumeRate\x12?\n" +
+	"\rlast_activity\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\flastActivity\"^\n" +
+	"\x16ScalePartitionsRequest\x12\x14\n" +
+	"\x05topic\x18\x01 \x01(\tR\x05topic\x12.\n" +
+	"\x13new_partition_count\x18\x02 \x01(\x05R\x11newPartitionCount\"\x87\x01\n" +
+	"\x17ScalePartitionsResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12\x1b\n" +
+	"\told_count\x18\x03 \x01(\x05R\boldCount\x12\x1b\n" +
+	"\tnew_count\x18\x04 \x01(\x05R\bnewCount\"\x9c\x02\n" +
+	"\x10JoinGroupRequest\x12\x1f\n" +
+	"\vconsumer_id\x18\x01 \x01(\tR\n" +
+	"consumerId\x12\x19\n" +
+	"\bgroup_id\x18\x02 \x01(\tR\agroupId\x12\x16\n" +
+	"\x06topics\x18\x03 \x03(\tR\x06topics\x12,\n" +
+	"\x12session_timeout_ms\x18\x04 \x01(\x05R\x10sessionTimeoutMs\x12I\n" +
+	"\bmetadata\x18\x05 \x03(\v2-.streamflow.v1.JoinGroupRequest.MetadataEntryR\bmetadata\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x99\x01\n" +
+	"\x11JoinGroupResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12/\n" +
+	"\x13assigned_partitions\x18\x03 \x03(\x05R\x12assignedPartitions\x12\x1f\n" +
+	"\vgroup_state\x18\x04 \x01(\tR\n" +
+	"groupState\"4\n" +
+	"\x11LeaveGroupRequest\x12\x1f\n" +
+	"\vconsumer_id\x18\x01 \x01(\tR\n" +
+	"consumerId\"H\n" +
+	"\x12LeaveGroupResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"3\n" +
+	"\x10HeartbeatRequest\x12\x1f\n" +
+	"\vconsumer_id\x18\x01 \x01(\tR\n" +
+	"consumerId\"r\n" +
+	"\x11HeartbeatResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12)\n" +
+	"\x10should_rebalance\x18\x03 \x01(\bR\x0fshouldRebalance\"-\n" +
+	"\x10GroupInfoRequest\x12\x19\n" +
+	"\bgroup_id\x18\x01 \x01(\tR\agroupId\"\x93\x02\n" +
+	"\x11GroupInfoResponse\x12\x19\n" +
+	"\bgroup_id\x18\x01 \x01(\tR\agroupId\x12\x14\n" +
+	"\x05state\x18\x02 \x01(\tR\x05state\x127\n" +
+	"\amembers\x18\x03 \x03(\v2\x1d.streamflow.v1.ConsumerMemberR\amembers\x12\x16\n" +
+	"\x06topics\x18\x04 \x03(\tR\x06topics\x129\n" +
+	"\n" +
+	"created_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12A\n" +
+	"\x0elast_rebalance\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\rlastRebalance\"\xc1\x02\n" +
+	"\x0eConsumerMember\x12\x1f\n" +
+	"\vconsumer_id\x18\x01 \x01(\tR\n" +
+	"consumerId\x12/\n" +
+	"\x13assigned_partitions\x18\x02 \x03(\x05R\x12assignedPartitions\x12\x14\n" +
+	"\x05state\x18\x03 \x01(\tR\x05state\x12A\n" +
+	"\x0elast_heartbeat\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\rlastHeartbeat\x12G\n" +
+	"\bmetadata\x18\x05 \x03(\v2+.streamflow.v1.ConsumerMember.MetadataEntryR\bmetadata\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x012\xed\x01\n" +
 	"\x0eMessageService\x12H\n" +
 	"\aProduce\x12\x1d.streamflow.v1.ProduceRequest\x1a\x1e.streamflow.v1.ProduceResponse\x12J\n" +
 	"\aConsume\x12\x1d.streamflow.v1.ConsumeRequest\x1a\x1e.streamflow.v1.ConsumeResponse0\x01\x12E\n" +
-	"\x06Health\x12\x1c.streamflow.v1.HealthRequest\x1a\x1d.streamflow.v1.HealthResponseB/Z-github.com/Anujtr/streamflow-engine/api/protob\x06proto3"
+	"\x06Health\x12\x1c.streamflow.v1.HealthRequest\x1a\x1d.streamflow.v1.HealthResponse2\x95\x03\n" +
+	"\x10PartitionService\x12]\n" +
+	"\x0eListPartitions\x12$.streamflow.v1.ListPartitionsRequest\x1a%.streamflow.v1.ListPartitionsResponse\x12X\n" +
+	"\x13RebalancePartitions\x12\x1f.streamflow.v1.RebalanceRequest\x1a .streamflow.v1.RebalanceResponse\x12f\n" +
+	"\x13GetPartitionMetrics\x12&.streamflow.v1.PartitionMetricsRequest\x1a'.streamflow.v1.PartitionMetricsResponse\x12`\n" +
+	"\x0fScalePartitions\x12%.streamflow.v1.ScalePartitionsRequest\x1a&.streamflow.v1.ScalePartitionsResponse2\xdc\x02\n" +
+	"\x14ConsumerGroupService\x12N\n" +
+	"\tJoinGroup\x12\x1f.streamflow.v1.JoinGroupRequest\x1a .streamflow.v1.JoinGroupResponse\x12Q\n" +
+	"\n" +
+	"LeaveGroup\x12 .streamflow.v1.LeaveGroupRequest\x1a!.streamflow.v1.LeaveGroupResponse\x12N\n" +
+	"\tHeartbeat\x12\x1f.streamflow.v1.HeartbeatRequest\x1a .streamflow.v1.HeartbeatResponse\x12Q\n" +
+	"\fGetGroupInfo\x12\x1f.streamflow.v1.GroupInfoRequest\x1a .streamflow.v1.GroupInfoResponseB/Z-github.com/Anujtr/streamflow-engine/api/protob\x06proto3"
 
 var (
 	file_api_proto_streamflow_proto_rawDescOnce sync.Once
@@ -541,36 +1769,85 @@ func file_api_proto_streamflow_proto_rawDescGZIP() []byte {
 	return file_api_proto_streamflow_proto_rawDescData
 }
 
-var file_api_proto_streamflow_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_api_proto_streamflow_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
 var file_api_proto_streamflow_proto_goTypes = []any{
-	(*Message)(nil),               // 0: streamflow.v1.Message
-	(*ProduceRequest)(nil),        // 1: streamflow.v1.ProduceRequest
-	(*ProduceResponse)(nil),       // 2: streamflow.v1.ProduceResponse
-	(*ProduceResult)(nil),         // 3: streamflow.v1.ProduceResult
-	(*ConsumeRequest)(nil),        // 4: streamflow.v1.ConsumeRequest
-	(*ConsumeResponse)(nil),       // 5: streamflow.v1.ConsumeResponse
-	(*HealthRequest)(nil),         // 6: streamflow.v1.HealthRequest
-	(*HealthResponse)(nil),        // 7: streamflow.v1.HealthResponse
-	nil,                           // 8: streamflow.v1.HealthResponse.MetricsEntry
-	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
+	(*Message)(nil),                  // 0: streamflow.v1.Message
+	(*ProduceRequest)(nil),           // 1: streamflow.v1.ProduceRequest
+	(*ProduceResponse)(nil),          // 2: streamflow.v1.ProduceResponse
+	(*ProduceResult)(nil),            // 3: streamflow.v1.ProduceResult
+	(*ConsumeRequest)(nil),           // 4: streamflow.v1.ConsumeRequest
+	(*ConsumeResponse)(nil),          // 5: streamflow.v1.ConsumeResponse
+	(*HealthRequest)(nil),            // 6: streamflow.v1.HealthRequest
+	(*HealthResponse)(nil),           // 7: streamflow.v1.HealthResponse
+	(*ListPartitionsRequest)(nil),    // 8: streamflow.v1.ListPartitionsRequest
+	(*ListPartitionsResponse)(nil),   // 9: streamflow.v1.ListPartitionsResponse
+	(*PartitionInfo)(nil),            // 10: streamflow.v1.PartitionInfo
+	(*RebalanceRequest)(nil),         // 11: streamflow.v1.RebalanceRequest
+	(*RebalanceResponse)(nil),        // 12: streamflow.v1.RebalanceResponse
+	(*PartitionMetricsRequest)(nil),  // 13: streamflow.v1.PartitionMetricsRequest
+	(*PartitionMetricsResponse)(nil), // 14: streamflow.v1.PartitionMetricsResponse
+	(*PartitionMetrics)(nil),         // 15: streamflow.v1.PartitionMetrics
+	(*ScalePartitionsRequest)(nil),   // 16: streamflow.v1.ScalePartitionsRequest
+	(*ScalePartitionsResponse)(nil),  // 17: streamflow.v1.ScalePartitionsResponse
+	(*JoinGroupRequest)(nil),         // 18: streamflow.v1.JoinGroupRequest
+	(*JoinGroupResponse)(nil),        // 19: streamflow.v1.JoinGroupResponse
+	(*LeaveGroupRequest)(nil),        // 20: streamflow.v1.LeaveGroupRequest
+	(*LeaveGroupResponse)(nil),       // 21: streamflow.v1.LeaveGroupResponse
+	(*HeartbeatRequest)(nil),         // 22: streamflow.v1.HeartbeatRequest
+	(*HeartbeatResponse)(nil),        // 23: streamflow.v1.HeartbeatResponse
+	(*GroupInfoRequest)(nil),         // 24: streamflow.v1.GroupInfoRequest
+	(*GroupInfoResponse)(nil),        // 25: streamflow.v1.GroupInfoResponse
+	(*ConsumerMember)(nil),           // 26: streamflow.v1.ConsumerMember
+	nil,                              // 27: streamflow.v1.HealthResponse.MetricsEntry
+	nil,                              // 28: streamflow.v1.RebalanceResponse.PartitionAssignmentsEntry
+	nil,                              // 29: streamflow.v1.JoinGroupRequest.MetadataEntry
+	nil,                              // 30: streamflow.v1.ConsumerMember.MetadataEntry
+	(*timestamppb.Timestamp)(nil),    // 31: google.protobuf.Timestamp
 }
 var file_api_proto_streamflow_proto_depIdxs = []int32{
-	9, // 0: streamflow.v1.Message.timestamp:type_name -> google.protobuf.Timestamp
-	0, // 1: streamflow.v1.ProduceRequest.messages:type_name -> streamflow.v1.Message
-	3, // 2: streamflow.v1.ProduceResponse.results:type_name -> streamflow.v1.ProduceResult
-	0, // 3: streamflow.v1.ConsumeResponse.messages:type_name -> streamflow.v1.Message
-	8, // 4: streamflow.v1.HealthResponse.metrics:type_name -> streamflow.v1.HealthResponse.MetricsEntry
-	1, // 5: streamflow.v1.MessageService.Produce:input_type -> streamflow.v1.ProduceRequest
-	4, // 6: streamflow.v1.MessageService.Consume:input_type -> streamflow.v1.ConsumeRequest
-	6, // 7: streamflow.v1.MessageService.Health:input_type -> streamflow.v1.HealthRequest
-	2, // 8: streamflow.v1.MessageService.Produce:output_type -> streamflow.v1.ProduceResponse
-	5, // 9: streamflow.v1.MessageService.Consume:output_type -> streamflow.v1.ConsumeResponse
-	7, // 10: streamflow.v1.MessageService.Health:output_type -> streamflow.v1.HealthResponse
-	8, // [8:11] is the sub-list for method output_type
-	5, // [5:8] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	31, // 0: streamflow.v1.Message.timestamp:type_name -> google.protobuf.Timestamp
+	0,  // 1: streamflow.v1.ProduceRequest.messages:type_name -> streamflow.v1.Message
+	3,  // 2: streamflow.v1.ProduceResponse.results:type_name -> streamflow.v1.ProduceResult
+	0,  // 3: streamflow.v1.ConsumeResponse.messages:type_name -> streamflow.v1.Message
+	27, // 4: streamflow.v1.HealthResponse.metrics:type_name -> streamflow.v1.HealthResponse.MetricsEntry
+	10, // 5: streamflow.v1.ListPartitionsResponse.partitions:type_name -> streamflow.v1.PartitionInfo
+	31, // 6: streamflow.v1.PartitionInfo.last_activity:type_name -> google.protobuf.Timestamp
+	28, // 7: streamflow.v1.RebalanceResponse.partition_assignments:type_name -> streamflow.v1.RebalanceResponse.PartitionAssignmentsEntry
+	15, // 8: streamflow.v1.PartitionMetricsResponse.metrics:type_name -> streamflow.v1.PartitionMetrics
+	31, // 9: streamflow.v1.PartitionMetrics.last_activity:type_name -> google.protobuf.Timestamp
+	29, // 10: streamflow.v1.JoinGroupRequest.metadata:type_name -> streamflow.v1.JoinGroupRequest.MetadataEntry
+	26, // 11: streamflow.v1.GroupInfoResponse.members:type_name -> streamflow.v1.ConsumerMember
+	31, // 12: streamflow.v1.GroupInfoResponse.created_at:type_name -> google.protobuf.Timestamp
+	31, // 13: streamflow.v1.GroupInfoResponse.last_rebalance:type_name -> google.protobuf.Timestamp
+	31, // 14: streamflow.v1.ConsumerMember.last_heartbeat:type_name -> google.protobuf.Timestamp
+	30, // 15: streamflow.v1.ConsumerMember.metadata:type_name -> streamflow.v1.ConsumerMember.MetadataEntry
+	1,  // 16: streamflow.v1.MessageService.Produce:input_type -> streamflow.v1.ProduceRequest
+	4,  // 17: streamflow.v1.MessageService.Consume:input_type -> streamflow.v1.ConsumeRequest
+	6,  // 18: streamflow.v1.MessageService.Health:input_type -> streamflow.v1.HealthRequest
+	8,  // 19: streamflow.v1.PartitionService.ListPartitions:input_type -> streamflow.v1.ListPartitionsRequest
+	11, // 20: streamflow.v1.PartitionService.RebalancePartitions:input_type -> streamflow.v1.RebalanceRequest
+	13, // 21: streamflow.v1.PartitionService.GetPartitionMetrics:input_type -> streamflow.v1.PartitionMetricsRequest
+	16, // 22: streamflow.v1.PartitionService.ScalePartitions:input_type -> streamflow.v1.ScalePartitionsRequest
+	18, // 23: streamflow.v1.ConsumerGroupService.JoinGroup:input_type -> streamflow.v1.JoinGroupRequest
+	20, // 24: streamflow.v1.ConsumerGroupService.LeaveGroup:input_type -> streamflow.v1.LeaveGroupRequest
+	22, // 25: streamflow.v1.ConsumerGroupService.Heartbeat:input_type -> streamflow.v1.HeartbeatRequest
+	24, // 26: streamflow.v1.ConsumerGroupService.GetGroupInfo:input_type -> streamflow.v1.GroupInfoRequest
+	2,  // 27: streamflow.v1.MessageService.Produce:output_type -> streamflow.v1.ProduceResponse
+	5,  // 28: streamflow.v1.MessageService.Consume:output_type -> streamflow.v1.ConsumeResponse
+	7,  // 29: streamflow.v1.MessageService.Health:output_type -> streamflow.v1.HealthResponse
+	9,  // 30: streamflow.v1.PartitionService.ListPartitions:output_type -> streamflow.v1.ListPartitionsResponse
+	12, // 31: streamflow.v1.PartitionService.RebalancePartitions:output_type -> streamflow.v1.RebalanceResponse
+	14, // 32: streamflow.v1.PartitionService.GetPartitionMetrics:output_type -> streamflow.v1.PartitionMetricsResponse
+	17, // 33: streamflow.v1.PartitionService.ScalePartitions:output_type -> streamflow.v1.ScalePartitionsResponse
+	19, // 34: streamflow.v1.ConsumerGroupService.JoinGroup:output_type -> streamflow.v1.JoinGroupResponse
+	21, // 35: streamflow.v1.ConsumerGroupService.LeaveGroup:output_type -> streamflow.v1.LeaveGroupResponse
+	23, // 36: streamflow.v1.ConsumerGroupService.Heartbeat:output_type -> streamflow.v1.HeartbeatResponse
+	25, // 37: streamflow.v1.ConsumerGroupService.GetGroupInfo:output_type -> streamflow.v1.GroupInfoResponse
+	27, // [27:38] is the sub-list for method output_type
+	16, // [16:27] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_api_proto_streamflow_proto_init() }
@@ -584,9 +1861,9 @@ func file_api_proto_streamflow_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_streamflow_proto_rawDesc), len(file_api_proto_streamflow_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   31,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   3,
 		},
 		GoTypes:           file_api_proto_streamflow_proto_goTypes,
 		DependencyIndexes: file_api_proto_streamflow_proto_depIdxs,

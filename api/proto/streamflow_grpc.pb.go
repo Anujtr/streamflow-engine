@@ -199,3 +199,435 @@ var MessageService_ServiceDesc = grpc.ServiceDesc{
 	},
 	Metadata: "api/proto/streamflow.proto",
 }
+
+const (
+	PartitionService_ListPartitions_FullMethodName      = "/streamflow.v1.PartitionService/ListPartitions"
+	PartitionService_RebalancePartitions_FullMethodName = "/streamflow.v1.PartitionService/RebalancePartitions"
+	PartitionService_GetPartitionMetrics_FullMethodName = "/streamflow.v1.PartitionService/GetPartitionMetrics"
+	PartitionService_ScalePartitions_FullMethodName     = "/streamflow.v1.PartitionService/ScalePartitions"
+)
+
+// PartitionServiceClient is the client API for PartitionService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type PartitionServiceClient interface {
+	ListPartitions(ctx context.Context, in *ListPartitionsRequest, opts ...grpc.CallOption) (*ListPartitionsResponse, error)
+	RebalancePartitions(ctx context.Context, in *RebalanceRequest, opts ...grpc.CallOption) (*RebalanceResponse, error)
+	GetPartitionMetrics(ctx context.Context, in *PartitionMetricsRequest, opts ...grpc.CallOption) (*PartitionMetricsResponse, error)
+	ScalePartitions(ctx context.Context, in *ScalePartitionsRequest, opts ...grpc.CallOption) (*ScalePartitionsResponse, error)
+}
+
+type partitionServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewPartitionServiceClient(cc grpc.ClientConnInterface) PartitionServiceClient {
+	return &partitionServiceClient{cc}
+}
+
+func (c *partitionServiceClient) ListPartitions(ctx context.Context, in *ListPartitionsRequest, opts ...grpc.CallOption) (*ListPartitionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListPartitionsResponse)
+	err := c.cc.Invoke(ctx, PartitionService_ListPartitions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *partitionServiceClient) RebalancePartitions(ctx context.Context, in *RebalanceRequest, opts ...grpc.CallOption) (*RebalanceResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RebalanceResponse)
+	err := c.cc.Invoke(ctx, PartitionService_RebalancePartitions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *partitionServiceClient) GetPartitionMetrics(ctx context.Context, in *PartitionMetricsRequest, opts ...grpc.CallOption) (*PartitionMetricsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PartitionMetricsResponse)
+	err := c.cc.Invoke(ctx, PartitionService_GetPartitionMetrics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *partitionServiceClient) ScalePartitions(ctx context.Context, in *ScalePartitionsRequest, opts ...grpc.CallOption) (*ScalePartitionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ScalePartitionsResponse)
+	err := c.cc.Invoke(ctx, PartitionService_ScalePartitions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// PartitionServiceServer is the server API for PartitionService service.
+// All implementations must embed UnimplementedPartitionServiceServer
+// for forward compatibility.
+type PartitionServiceServer interface {
+	ListPartitions(context.Context, *ListPartitionsRequest) (*ListPartitionsResponse, error)
+	RebalancePartitions(context.Context, *RebalanceRequest) (*RebalanceResponse, error)
+	GetPartitionMetrics(context.Context, *PartitionMetricsRequest) (*PartitionMetricsResponse, error)
+	ScalePartitions(context.Context, *ScalePartitionsRequest) (*ScalePartitionsResponse, error)
+	mustEmbedUnimplementedPartitionServiceServer()
+}
+
+// UnimplementedPartitionServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedPartitionServiceServer struct{}
+
+func (UnimplementedPartitionServiceServer) ListPartitions(context.Context, *ListPartitionsRequest) (*ListPartitionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListPartitions not implemented")
+}
+func (UnimplementedPartitionServiceServer) RebalancePartitions(context.Context, *RebalanceRequest) (*RebalanceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RebalancePartitions not implemented")
+}
+func (UnimplementedPartitionServiceServer) GetPartitionMetrics(context.Context, *PartitionMetricsRequest) (*PartitionMetricsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPartitionMetrics not implemented")
+}
+func (UnimplementedPartitionServiceServer) ScalePartitions(context.Context, *ScalePartitionsRequest) (*ScalePartitionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ScalePartitions not implemented")
+}
+func (UnimplementedPartitionServiceServer) mustEmbedUnimplementedPartitionServiceServer() {}
+func (UnimplementedPartitionServiceServer) testEmbeddedByValue()                          {}
+
+// UnsafePartitionServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to PartitionServiceServer will
+// result in compilation errors.
+type UnsafePartitionServiceServer interface {
+	mustEmbedUnimplementedPartitionServiceServer()
+}
+
+func RegisterPartitionServiceServer(s grpc.ServiceRegistrar, srv PartitionServiceServer) {
+	// If the following call pancis, it indicates UnimplementedPartitionServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&PartitionService_ServiceDesc, srv)
+}
+
+func _PartitionService_ListPartitions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPartitionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartitionServiceServer).ListPartitions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartitionService_ListPartitions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartitionServiceServer).ListPartitions(ctx, req.(*ListPartitionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PartitionService_RebalancePartitions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RebalanceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartitionServiceServer).RebalancePartitions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartitionService_RebalancePartitions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartitionServiceServer).RebalancePartitions(ctx, req.(*RebalanceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PartitionService_GetPartitionMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PartitionMetricsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartitionServiceServer).GetPartitionMetrics(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartitionService_GetPartitionMetrics_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartitionServiceServer).GetPartitionMetrics(ctx, req.(*PartitionMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _PartitionService_ScalePartitions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ScalePartitionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PartitionServiceServer).ScalePartitions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PartitionService_ScalePartitions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PartitionServiceServer).ScalePartitions(ctx, req.(*ScalePartitionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// PartitionService_ServiceDesc is the grpc.ServiceDesc for PartitionService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var PartitionService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "streamflow.v1.PartitionService",
+	HandlerType: (*PartitionServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "ListPartitions",
+			Handler:    _PartitionService_ListPartitions_Handler,
+		},
+		{
+			MethodName: "RebalancePartitions",
+			Handler:    _PartitionService_RebalancePartitions_Handler,
+		},
+		{
+			MethodName: "GetPartitionMetrics",
+			Handler:    _PartitionService_GetPartitionMetrics_Handler,
+		},
+		{
+			MethodName: "ScalePartitions",
+			Handler:    _PartitionService_ScalePartitions_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "api/proto/streamflow.proto",
+}
+
+const (
+	ConsumerGroupService_JoinGroup_FullMethodName    = "/streamflow.v1.ConsumerGroupService/JoinGroup"
+	ConsumerGroupService_LeaveGroup_FullMethodName   = "/streamflow.v1.ConsumerGroupService/LeaveGroup"
+	ConsumerGroupService_Heartbeat_FullMethodName    = "/streamflow.v1.ConsumerGroupService/Heartbeat"
+	ConsumerGroupService_GetGroupInfo_FullMethodName = "/streamflow.v1.ConsumerGroupService/GetGroupInfo"
+)
+
+// ConsumerGroupServiceClient is the client API for ConsumerGroupService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type ConsumerGroupServiceClient interface {
+	JoinGroup(ctx context.Context, in *JoinGroupRequest, opts ...grpc.CallOption) (*JoinGroupResponse, error)
+	LeaveGroup(ctx context.Context, in *LeaveGroupRequest, opts ...grpc.CallOption) (*LeaveGroupResponse, error)
+	Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatResponse, error)
+	GetGroupInfo(ctx context.Context, in *GroupInfoRequest, opts ...grpc.CallOption) (*GroupInfoResponse, error)
+}
+
+type consumerGroupServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewConsumerGroupServiceClient(cc grpc.ClientConnInterface) ConsumerGroupServiceClient {
+	return &consumerGroupServiceClient{cc}
+}
+
+func (c *consumerGroupServiceClient) JoinGroup(ctx context.Context, in *JoinGroupRequest, opts ...grpc.CallOption) (*JoinGroupResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(JoinGroupResponse)
+	err := c.cc.Invoke(ctx, ConsumerGroupService_JoinGroup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *consumerGroupServiceClient) LeaveGroup(ctx context.Context, in *LeaveGroupRequest, opts ...grpc.CallOption) (*LeaveGroupResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LeaveGroupResponse)
+	err := c.cc.Invoke(ctx, ConsumerGroupService_LeaveGroup_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *consumerGroupServiceClient) Heartbeat(ctx context.Context, in *HeartbeatRequest, opts ...grpc.CallOption) (*HeartbeatResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HeartbeatResponse)
+	err := c.cc.Invoke(ctx, ConsumerGroupService_Heartbeat_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *consumerGroupServiceClient) GetGroupInfo(ctx context.Context, in *GroupInfoRequest, opts ...grpc.CallOption) (*GroupInfoResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GroupInfoResponse)
+	err := c.cc.Invoke(ctx, ConsumerGroupService_GetGroupInfo_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ConsumerGroupServiceServer is the server API for ConsumerGroupService service.
+// All implementations must embed UnimplementedConsumerGroupServiceServer
+// for forward compatibility.
+type ConsumerGroupServiceServer interface {
+	JoinGroup(context.Context, *JoinGroupRequest) (*JoinGroupResponse, error)
+	LeaveGroup(context.Context, *LeaveGroupRequest) (*LeaveGroupResponse, error)
+	Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatResponse, error)
+	GetGroupInfo(context.Context, *GroupInfoRequest) (*GroupInfoResponse, error)
+	mustEmbedUnimplementedConsumerGroupServiceServer()
+}
+
+// UnimplementedConsumerGroupServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedConsumerGroupServiceServer struct{}
+
+func (UnimplementedConsumerGroupServiceServer) JoinGroup(context.Context, *JoinGroupRequest) (*JoinGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method JoinGroup not implemented")
+}
+func (UnimplementedConsumerGroupServiceServer) LeaveGroup(context.Context, *LeaveGroupRequest) (*LeaveGroupResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LeaveGroup not implemented")
+}
+func (UnimplementedConsumerGroupServiceServer) Heartbeat(context.Context, *HeartbeatRequest) (*HeartbeatResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Heartbeat not implemented")
+}
+func (UnimplementedConsumerGroupServiceServer) GetGroupInfo(context.Context, *GroupInfoRequest) (*GroupInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetGroupInfo not implemented")
+}
+func (UnimplementedConsumerGroupServiceServer) mustEmbedUnimplementedConsumerGroupServiceServer() {}
+func (UnimplementedConsumerGroupServiceServer) testEmbeddedByValue()                              {}
+
+// UnsafeConsumerGroupServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ConsumerGroupServiceServer will
+// result in compilation errors.
+type UnsafeConsumerGroupServiceServer interface {
+	mustEmbedUnimplementedConsumerGroupServiceServer()
+}
+
+func RegisterConsumerGroupServiceServer(s grpc.ServiceRegistrar, srv ConsumerGroupServiceServer) {
+	// If the following call pancis, it indicates UnimplementedConsumerGroupServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&ConsumerGroupService_ServiceDesc, srv)
+}
+
+func _ConsumerGroupService_JoinGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JoinGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConsumerGroupServiceServer).JoinGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConsumerGroupService_JoinGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConsumerGroupServiceServer).JoinGroup(ctx, req.(*JoinGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ConsumerGroupService_LeaveGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeaveGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConsumerGroupServiceServer).LeaveGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConsumerGroupService_LeaveGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConsumerGroupServiceServer).LeaveGroup(ctx, req.(*LeaveGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ConsumerGroupService_Heartbeat_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HeartbeatRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConsumerGroupServiceServer).Heartbeat(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConsumerGroupService_Heartbeat_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConsumerGroupServiceServer).Heartbeat(ctx, req.(*HeartbeatRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ConsumerGroupService_GetGroupInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GroupInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConsumerGroupServiceServer).GetGroupInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ConsumerGroupService_GetGroupInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConsumerGroupServiceServer).GetGroupInfo(ctx, req.(*GroupInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// ConsumerGroupService_ServiceDesc is the grpc.ServiceDesc for ConsumerGroupService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var ConsumerGroupService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "streamflow.v1.ConsumerGroupService",
+	HandlerType: (*ConsumerGroupServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "JoinGroup",
+			Handler:    _ConsumerGroupService_JoinGroup_Handler,
+		},
+		{
+			MethodName: "LeaveGroup",
+			Handler:    _ConsumerGroupService_LeaveGroup_Handler,
+		},
+		{
+			MethodName: "Heartbeat",
+			Handler:    _ConsumerGroupService_Heartbeat_Handler,
+		},
+		{
+			MethodName: "GetGroupInfo",
+			Handler:    _ConsumerGroupService_GetGroupInfo_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "api/proto/streamflow.proto",
+}

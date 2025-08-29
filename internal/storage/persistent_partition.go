@@ -92,3 +92,8 @@ func (pp *PersistentPartition) GetNextOffset() int64 {
 
 	return offset
 }
+
+// GetID returns the partition ID
+func (pp *PersistentPartition) GetID() int32 {
+	return pp.ID
+}

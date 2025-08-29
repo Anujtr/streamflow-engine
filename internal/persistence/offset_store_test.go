@@ -169,6 +169,15 @@ func TestOffsetStore_GetAllOffsets(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to commit offset for partition %d: %v", partition, err)
 		}
+		
+		// Immediately test if we can retrieve it
+		retrievedOffset, err := offsetStore.GetOffset(consumerGroup, topic, partition)
+		if err != nil {
+			t.Fatalf("Failed to retrieve offset for partition %d: %v", partition, err)
+		}
+		if retrievedOffset != offset {
+			t.Errorf("Mismatch for partition %d: expected %d, got %d", partition, offset, retrievedOffset)
+		}
 	}
 
 	// Get all offsets
@@ -179,6 +188,8 @@ func TestOffsetStore_GetAllOffsets(t *testing.T) {
 
 	if len(allOffsets) != numPartitions {
 		t.Errorf("Expected %d offsets, got %d", numPartitions, len(allOffsets))
+		t.Logf("Expected offsets: %v", expectedOffsets)
+		t.Logf("Actual offsets: %v", allOffsets)
 	}
 
 	for partition, expectedOffset := range expectedOffsets {

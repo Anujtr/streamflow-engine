@@ -76,12 +76,17 @@ func (os *OffsetStore) GetAllOffsets(consumerGroup, topic string) (map[int32]int
 	for iter.First(); iter.Valid(); iter.Next() {
 		key := string(iter.Key())
 		
-		// Parse partition from key: "consumer_offset:{group}:{topic}:{partition}"
-		var partition int32
-		if n, err := fmt.Sscanf(key, "consumer_offset:%s:%s:%d", &consumerGroup, &topic, &partition); n == 3 && err == nil {
-			if len(iter.Value()) >= 8 {
-				offset := int64(binary.BigEndian.Uint64(iter.Value()))
-				offsets[partition] = offset
+		// Keys have format: "consumer_offset:{group}:{topic}:{partition}"
+		// Since we're using prefix search, we know they start with the right prefix
+		if len(key) > len(prefix) {
+			// Extract partition number from the end
+			partitionStr := key[len(prefix):]
+			var partition int32
+			if n, err := fmt.Sscanf(partitionStr, "%d", &partition); n == 1 && err == nil {
+				if len(iter.Value()) >= 8 {
+					offset := int64(binary.BigEndian.Uint64(iter.Value()))
+					offsets[partition] = offset
+				}
 			}
 		}
 	}

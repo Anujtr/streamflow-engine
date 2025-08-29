@@ -96,3 +96,7 @@ func (p *Partition) Size() int {
 	defer p.mu.RUnlock()
 	return len(p.Messages)
 }
+
+func (p *Partition) GetID() int32 {
+	return p.ID
+}

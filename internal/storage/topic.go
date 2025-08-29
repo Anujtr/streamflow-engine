@@ -14,6 +14,7 @@ type PartitionInterface interface {
 	Read(offset int64, maxMessages int32) ([]*Message, bool)
 	Size() int
 	GetNextOffset() int64
+	GetID() int32
 }
 
 type Topic struct {

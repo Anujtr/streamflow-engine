@@ -25,8 +25,8 @@ func TestNewTopic(t *testing.T) {
 		if !exists {
 			t.Errorf("Expected partition %d to exist", i)
 		}
-		if partition.ID != i {
-			t.Errorf("Expected partition ID %d, got %d", i, partition.ID)
+		if partition.GetID() != i {
+			t.Errorf("Expected partition ID %d, got %d", i, partition.GetID())
 		}
 	}
 }

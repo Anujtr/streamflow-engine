@@ -48,6 +48,36 @@ func (t *Topic) GetPartition(key string) int32 {
 	return partition
 }
 
+// AddPartition adds a new partition to the topic
+func (t *Topic) AddPartition(partitionID int32) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	if _, exists := t.Partitions[partitionID]; exists {
+		return fmt.Errorf("partition %d already exists", partitionID)
+	}
+
+	t.Partitions[partitionID] = NewPartition(partitionID)
+	if partitionID >= t.NumPartitions {
+		t.NumPartitions = partitionID + 1
+	}
+
+	return nil
+}
+
+// RemovePartition removes a partition from the topic (careful: data loss)
+func (t *Topic) RemovePartition(partitionID int32) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	if _, exists := t.Partitions[partitionID]; !exists {
+		return fmt.Errorf("partition %d does not exist", partitionID)
+	}
+
+	delete(t.Partitions, partitionID)
+	return nil
+}
+
 func (t *Topic) Produce(msg *Message) (int32, int64, error) {
 	partition := t.GetPartition(msg.Key)
 	

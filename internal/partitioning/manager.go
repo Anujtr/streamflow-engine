@@ -1,21 +1,27 @@
 package partitioning
 
 import (
+	"context"
 	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"github.com/Anujtr/streamflow-engine/internal/coordination"
 	"github.com/Anujtr/streamflow-engine/internal/storage"
 )
 
-// PartitionManager manages partition lifecycle and rebalancing
+// PartitionManager manages partition lifecycle and rebalancing with leader election
 type PartitionManager struct {
-	storage    *storage.Storage
-	hashRing   *HashRing
-	partitions map[string]*TopicPartitions // topic -> partitions
-	mu         sync.RWMutex
+	storage           *storage.Storage
+	hashRing          *HashRing
+	partitions        map[string]*TopicPartitions // topic -> partitions
+	mu                sync.RWMutex
 
+	// Leader election
+	leadershipManager *coordination.LeadershipManager
+	nodeID           string
+	
 	// Metrics
 	rebalanceCount   int64
 	lastRebalance    time.Time
@@ -52,6 +58,18 @@ func NewPartitionManager(storage *storage.Storage) *PartitionManager {
 	}
 }
 
+// NewPartitionManagerWithLeadership creates a new partition manager with leader election
+func NewPartitionManagerWithLeadership(storage *storage.Storage, leadershipManager *coordination.LeadershipManager, nodeID string) *PartitionManager {
+	return &PartitionManager{
+		storage:           storage,
+		hashRing:          NewHashRing(DefaultVirtualNodes),
+		partitions:        make(map[string]*TopicPartitions),
+		partitionMetrics:  make(map[string]*PartitionMetrics),
+		leadershipManager: leadershipManager,
+		nodeID:           nodeID,
+	}
+}
+
 // CreateTopicPartitions creates partitions for a topic using consistent hashing
 func (pm *PartitionManager) CreateTopicPartitions(topicName string, partitionCount int32) error {
 	pm.mu.Lock()
@@ -83,7 +101,7 @@ func (pm *PartitionManager) CreateTopicPartitions(topicName string, partitionCou
 		UpdatedAt:      time.Now(),
 	}
 
-	// Initialize metrics for each partition
+	// Initialize metrics for each partition and start leader election
 	for i := int32(0); i < partitionCount; i++ {
 		metricKey := fmt.Sprintf("%s-%d", topicName, i)
 		pm.partitionMetrics[metricKey] = &PartitionMetrics{
@@ -91,6 +109,11 @@ func (pm *PartitionManager) CreateTopicPartitions(topicName string, partitionCou
 			MessageCount:  0,
 			BytesStored:   0,
 			LastActivity:  time.Now(),
+		}
+
+		// Start leader election for this partition if leadership manager is available
+		if pm.leadershipManager != nil {
+			go pm.startPartitionLeaderElection(context.Background(), topicName, i)
 		}
 	}
 
@@ -289,4 +312,64 @@ type ManagerStats struct {
 	RebalanceCount   int64     `json:"rebalance_count"`
 	LastRebalance    time.Time `json:"last_rebalance"`
 	PartitionMetrics int       `json:"partition_metrics_count"`
+}
+
+// startPartitionLeaderElection starts leader election for a partition
+func (pm *PartitionManager) startPartitionLeaderElection(ctx context.Context, topicName string, partition int32) {
+	if pm.leadershipManager == nil {
+		return
+	}
+
+	config := coordination.LeaderElectionConfig{
+		LeaseTTL: 30, // 30 seconds
+		OnLeadershipChange: func(isLeader bool) {
+			pm.onPartitionLeadershipChange(topicName, partition, isLeader)
+		},
+	}
+
+	err := pm.leadershipManager.StartLeaderElection(ctx, topicName, partition, config)
+	if err != nil {
+		// Log error but don't fail the partition creation
+		// In a production system, you'd want proper logging
+		fmt.Printf("Failed to start leader election for %s partition %d: %v\n", topicName, partition, err)
+	}
+}
+
+// onPartitionLeadershipChange handles changes in partition leadership
+func (pm *PartitionManager) onPartitionLeadershipChange(topicName string, partition int32, isLeader bool) {
+	if isLeader {
+		fmt.Printf("Node %s became leader for %s partition %d\n", pm.nodeID, topicName, partition)
+		// Update metrics to indicate leadership
+		pm.metricsMu.Lock()
+		metricKey := fmt.Sprintf("%s-%d", topicName, partition)
+		if metrics, exists := pm.partitionMetrics[metricKey]; exists {
+			metrics.LastActivity = time.Now()
+		}
+		pm.metricsMu.Unlock()
+	} else {
+		fmt.Printf("Node %s lost leadership for %s partition %d\n", pm.nodeID, topicName, partition)
+	}
+}
+
+// IsPartitionLeader returns whether this node is the leader for a partition
+func (pm *PartitionManager) IsPartitionLeader(topicName string, partition int32) bool {
+	if pm.leadershipManager == nil {
+		return true // If no leader election, assume we're always the leader (single-node mode)
+	}
+	return pm.leadershipManager.IsLeader(topicName, partition)
+}
+
+// GetPartitionLeader returns the leader node ID for a partition
+func (pm *PartitionManager) GetPartitionLeader(ctx context.Context, topicName string, partition int32) (string, error) {
+	if pm.leadershipManager == nil {
+		return pm.nodeID, nil // Single-node mode
+	}
+	return pm.leadershipManager.GetLeader(ctx, topicName, partition)
+}
+
+// Stop stops all leader elections managed by this partition manager
+func (pm *PartitionManager) Stop() {
+	if pm.leadershipManager != nil {
+		pm.leadershipManager.Stop()
+	}
 }

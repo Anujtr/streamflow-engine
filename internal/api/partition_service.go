@@ -28,7 +28,7 @@ func (ps *PartitionServer) ListPartitions(ctx context.Context, req *pb.ListParti
 		return nil, fmt.Errorf("topic name is required")
 	}
 
-	topicPartitions, err := ps.partitionManager.GetTopicPartitions(req.Topic)
+	_, err := ps.partitionManager.GetTopicPartitions(req.Topic)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get topic partitions: %v", err)
 	}

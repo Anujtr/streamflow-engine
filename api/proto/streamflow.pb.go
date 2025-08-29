@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.8
 // 	protoc        v6.32.0
-// source: api/proto/streamflow.proto
+// source: streamflow.proto
 
 package proto
 
@@ -35,7 +35,7 @@ type Message struct {
 
 func (x *Message) Reset() {
 	*x = Message{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[0]
+	mi := &file_streamflow_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -47,7 +47,7 @@ func (x *Message) String() string {
 func (*Message) ProtoMessage() {}
 
 func (x *Message) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[0]
+	mi := &file_streamflow_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -60,7 +60,7 @@ func (x *Message) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Message.ProtoReflect.Descriptor instead.
 func (*Message) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{0}
+	return file_streamflow_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Message) GetKey() string {
@@ -108,7 +108,7 @@ type ProduceRequest struct {
 
 func (x *ProduceRequest) Reset() {
 	*x = ProduceRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[1]
+	mi := &file_streamflow_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -120,7 +120,7 @@ func (x *ProduceRequest) String() string {
 func (*ProduceRequest) ProtoMessage() {}
 
 func (x *ProduceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[1]
+	mi := &file_streamflow_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -133,7 +133,7 @@ func (x *ProduceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProduceRequest.ProtoReflect.Descriptor instead.
 func (*ProduceRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{1}
+	return file_streamflow_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ProduceRequest) GetTopic() string {
@@ -159,7 +159,7 @@ type ProduceResponse struct {
 
 func (x *ProduceResponse) Reset() {
 	*x = ProduceResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[2]
+	mi := &file_streamflow_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -171,7 +171,7 @@ func (x *ProduceResponse) String() string {
 func (*ProduceResponse) ProtoMessage() {}
 
 func (x *ProduceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[2]
+	mi := &file_streamflow_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -184,7 +184,7 @@ func (x *ProduceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProduceResponse.ProtoReflect.Descriptor instead.
 func (*ProduceResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{2}
+	return file_streamflow_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ProduceResponse) GetResults() []*ProduceResult {
@@ -205,7 +205,7 @@ type ProduceResult struct {
 
 func (x *ProduceResult) Reset() {
 	*x = ProduceResult{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[3]
+	mi := &file_streamflow_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -217,7 +217,7 @@ func (x *ProduceResult) String() string {
 func (*ProduceResult) ProtoMessage() {}
 
 func (x *ProduceResult) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[3]
+	mi := &file_streamflow_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -230,7 +230,7 @@ func (x *ProduceResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProduceResult.ProtoReflect.Descriptor instead.
 func (*ProduceResult) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{3}
+	return file_streamflow_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ProduceResult) GetPartition() int32 {
@@ -267,7 +267,7 @@ type ConsumeRequest struct {
 
 func (x *ConsumeRequest) Reset() {
 	*x = ConsumeRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[4]
+	mi := &file_streamflow_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -279,7 +279,7 @@ func (x *ConsumeRequest) String() string {
 func (*ConsumeRequest) ProtoMessage() {}
 
 func (x *ConsumeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[4]
+	mi := &file_streamflow_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -292,7 +292,7 @@ func (x *ConsumeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConsumeRequest.ProtoReflect.Descriptor instead.
 func (*ConsumeRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{4}
+	return file_streamflow_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ConsumeRequest) GetTopic() string {
@@ -341,7 +341,7 @@ type ConsumeResponse struct {
 
 func (x *ConsumeResponse) Reset() {
 	*x = ConsumeResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[5]
+	mi := &file_streamflow_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -353,7 +353,7 @@ func (x *ConsumeResponse) String() string {
 func (*ConsumeResponse) ProtoMessage() {}
 
 func (x *ConsumeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[5]
+	mi := &file_streamflow_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -366,7 +366,7 @@ func (x *ConsumeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConsumeResponse.ProtoReflect.Descriptor instead.
 func (*ConsumeResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{5}
+	return file_streamflow_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ConsumeResponse) GetMessages() []*Message {
@@ -398,7 +398,7 @@ type HealthRequest struct {
 
 func (x *HealthRequest) Reset() {
 	*x = HealthRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[6]
+	mi := &file_streamflow_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -410,7 +410,7 @@ func (x *HealthRequest) String() string {
 func (*HealthRequest) ProtoMessage() {}
 
 func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[6]
+	mi := &file_streamflow_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -423,7 +423,7 @@ func (x *HealthRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
 func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{6}
+	return file_streamflow_proto_rawDescGZIP(), []int{6}
 }
 
 type HealthResponse struct {
@@ -437,7 +437,7 @@ type HealthResponse struct {
 
 func (x *HealthResponse) Reset() {
 	*x = HealthResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[7]
+	mi := &file_streamflow_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -449,7 +449,7 @@ func (x *HealthResponse) String() string {
 func (*HealthResponse) ProtoMessage() {}
 
 func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[7]
+	mi := &file_streamflow_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -462,7 +462,7 @@ func (x *HealthResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
 func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{7}
+	return file_streamflow_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *HealthResponse) GetStatus() string {
@@ -496,7 +496,7 @@ type ListPartitionsRequest struct {
 
 func (x *ListPartitionsRequest) Reset() {
 	*x = ListPartitionsRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[8]
+	mi := &file_streamflow_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -508,7 +508,7 @@ func (x *ListPartitionsRequest) String() string {
 func (*ListPartitionsRequest) ProtoMessage() {}
 
 func (x *ListPartitionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[8]
+	mi := &file_streamflow_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -521,7 +521,7 @@ func (x *ListPartitionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPartitionsRequest.ProtoReflect.Descriptor instead.
 func (*ListPartitionsRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{8}
+	return file_streamflow_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListPartitionsRequest) GetTopic() string {
@@ -540,7 +540,7 @@ type ListPartitionsResponse struct {
 
 func (x *ListPartitionsResponse) Reset() {
 	*x = ListPartitionsResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[9]
+	mi := &file_streamflow_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -552,7 +552,7 @@ func (x *ListPartitionsResponse) String() string {
 func (*ListPartitionsResponse) ProtoMessage() {}
 
 func (x *ListPartitionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[9]
+	mi := &file_streamflow_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -565,7 +565,7 @@ func (x *ListPartitionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPartitionsResponse.ProtoReflect.Descriptor instead.
 func (*ListPartitionsResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{9}
+	return file_streamflow_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListPartitionsResponse) GetPartitions() []*PartitionInfo {
@@ -588,7 +588,7 @@ type PartitionInfo struct {
 
 func (x *PartitionInfo) Reset() {
 	*x = PartitionInfo{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[10]
+	mi := &file_streamflow_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -600,7 +600,7 @@ func (x *PartitionInfo) String() string {
 func (*PartitionInfo) ProtoMessage() {}
 
 func (x *PartitionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[10]
+	mi := &file_streamflow_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -613,7 +613,7 @@ func (x *PartitionInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PartitionInfo.ProtoReflect.Descriptor instead.
 func (*PartitionInfo) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{10}
+	return file_streamflow_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *PartitionInfo) GetPartitionId() int32 {
@@ -661,7 +661,7 @@ type RebalanceRequest struct {
 
 func (x *RebalanceRequest) Reset() {
 	*x = RebalanceRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[11]
+	mi := &file_streamflow_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -673,7 +673,7 @@ func (x *RebalanceRequest) String() string {
 func (*RebalanceRequest) ProtoMessage() {}
 
 func (x *RebalanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[11]
+	mi := &file_streamflow_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -686,7 +686,7 @@ func (x *RebalanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RebalanceRequest.ProtoReflect.Descriptor instead.
 func (*RebalanceRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{11}
+	return file_streamflow_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *RebalanceRequest) GetTopic() string {
@@ -714,7 +714,7 @@ type RebalanceResponse struct {
 
 func (x *RebalanceResponse) Reset() {
 	*x = RebalanceResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[12]
+	mi := &file_streamflow_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -726,7 +726,7 @@ func (x *RebalanceResponse) String() string {
 func (*RebalanceResponse) ProtoMessage() {}
 
 func (x *RebalanceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[12]
+	mi := &file_streamflow_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -739,7 +739,7 @@ func (x *RebalanceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RebalanceResponse.ProtoReflect.Descriptor instead.
 func (*RebalanceResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{12}
+	return file_streamflow_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *RebalanceResponse) GetSuccess() bool {
@@ -773,7 +773,7 @@ type PartitionMetricsRequest struct {
 
 func (x *PartitionMetricsRequest) Reset() {
 	*x = PartitionMetricsRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[13]
+	mi := &file_streamflow_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -785,7 +785,7 @@ func (x *PartitionMetricsRequest) String() string {
 func (*PartitionMetricsRequest) ProtoMessage() {}
 
 func (x *PartitionMetricsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[13]
+	mi := &file_streamflow_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -798,7 +798,7 @@ func (x *PartitionMetricsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PartitionMetricsRequest.ProtoReflect.Descriptor instead.
 func (*PartitionMetricsRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{13}
+	return file_streamflow_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *PartitionMetricsRequest) GetTopic() string {
@@ -824,7 +824,7 @@ type PartitionMetricsResponse struct {
 
 func (x *PartitionMetricsResponse) Reset() {
 	*x = PartitionMetricsResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[14]
+	mi := &file_streamflow_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -836,7 +836,7 @@ func (x *PartitionMetricsResponse) String() string {
 func (*PartitionMetricsResponse) ProtoMessage() {}
 
 func (x *PartitionMetricsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[14]
+	mi := &file_streamflow_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -849,7 +849,7 @@ func (x *PartitionMetricsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PartitionMetricsResponse.ProtoReflect.Descriptor instead.
 func (*PartitionMetricsResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{14}
+	return file_streamflow_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *PartitionMetricsResponse) GetMetrics() []*PartitionMetrics {
@@ -873,7 +873,7 @@ type PartitionMetrics struct {
 
 func (x *PartitionMetrics) Reset() {
 	*x = PartitionMetrics{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[15]
+	mi := &file_streamflow_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -885,7 +885,7 @@ func (x *PartitionMetrics) String() string {
 func (*PartitionMetrics) ProtoMessage() {}
 
 func (x *PartitionMetrics) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[15]
+	mi := &file_streamflow_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -898,7 +898,7 @@ func (x *PartitionMetrics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PartitionMetrics.ProtoReflect.Descriptor instead.
 func (*PartitionMetrics) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{15}
+	return file_streamflow_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *PartitionMetrics) GetPartitionId() int32 {
@@ -953,7 +953,7 @@ type ScalePartitionsRequest struct {
 
 func (x *ScalePartitionsRequest) Reset() {
 	*x = ScalePartitionsRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[16]
+	mi := &file_streamflow_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -965,7 +965,7 @@ func (x *ScalePartitionsRequest) String() string {
 func (*ScalePartitionsRequest) ProtoMessage() {}
 
 func (x *ScalePartitionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[16]
+	mi := &file_streamflow_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -978,7 +978,7 @@ func (x *ScalePartitionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScalePartitionsRequest.ProtoReflect.Descriptor instead.
 func (*ScalePartitionsRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{16}
+	return file_streamflow_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ScalePartitionsRequest) GetTopic() string {
@@ -1007,7 +1007,7 @@ type ScalePartitionsResponse struct {
 
 func (x *ScalePartitionsResponse) Reset() {
 	*x = ScalePartitionsResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[17]
+	mi := &file_streamflow_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1019,7 +1019,7 @@ func (x *ScalePartitionsResponse) String() string {
 func (*ScalePartitionsResponse) ProtoMessage() {}
 
 func (x *ScalePartitionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[17]
+	mi := &file_streamflow_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1032,7 +1032,7 @@ func (x *ScalePartitionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ScalePartitionsResponse.ProtoReflect.Descriptor instead.
 func (*ScalePartitionsResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{17}
+	return file_streamflow_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ScalePartitionsResponse) GetSuccess() bool {
@@ -1077,7 +1077,7 @@ type JoinGroupRequest struct {
 
 func (x *JoinGroupRequest) Reset() {
 	*x = JoinGroupRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[18]
+	mi := &file_streamflow_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1089,7 +1089,7 @@ func (x *JoinGroupRequest) String() string {
 func (*JoinGroupRequest) ProtoMessage() {}
 
 func (x *JoinGroupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[18]
+	mi := &file_streamflow_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1102,7 +1102,7 @@ func (x *JoinGroupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinGroupRequest.ProtoReflect.Descriptor instead.
 func (*JoinGroupRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{18}
+	return file_streamflow_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *JoinGroupRequest) GetConsumerId() string {
@@ -1152,7 +1152,7 @@ type JoinGroupResponse struct {
 
 func (x *JoinGroupResponse) Reset() {
 	*x = JoinGroupResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[19]
+	mi := &file_streamflow_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1164,7 +1164,7 @@ func (x *JoinGroupResponse) String() string {
 func (*JoinGroupResponse) ProtoMessage() {}
 
 func (x *JoinGroupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[19]
+	mi := &file_streamflow_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1177,7 +1177,7 @@ func (x *JoinGroupResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JoinGroupResponse.ProtoReflect.Descriptor instead.
 func (*JoinGroupResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{19}
+	return file_streamflow_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *JoinGroupResponse) GetSuccess() bool {
@@ -1217,7 +1217,7 @@ type LeaveGroupRequest struct {
 
 func (x *LeaveGroupRequest) Reset() {
 	*x = LeaveGroupRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[20]
+	mi := &file_streamflow_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1229,7 +1229,7 @@ func (x *LeaveGroupRequest) String() string {
 func (*LeaveGroupRequest) ProtoMessage() {}
 
 func (x *LeaveGroupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[20]
+	mi := &file_streamflow_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1242,7 +1242,7 @@ func (x *LeaveGroupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaveGroupRequest.ProtoReflect.Descriptor instead.
 func (*LeaveGroupRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{20}
+	return file_streamflow_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *LeaveGroupRequest) GetConsumerId() string {
@@ -1262,7 +1262,7 @@ type LeaveGroupResponse struct {
 
 func (x *LeaveGroupResponse) Reset() {
 	*x = LeaveGroupResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[21]
+	mi := &file_streamflow_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1274,7 +1274,7 @@ func (x *LeaveGroupResponse) String() string {
 func (*LeaveGroupResponse) ProtoMessage() {}
 
 func (x *LeaveGroupResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[21]
+	mi := &file_streamflow_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1287,7 +1287,7 @@ func (x *LeaveGroupResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaveGroupResponse.ProtoReflect.Descriptor instead.
 func (*LeaveGroupResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{21}
+	return file_streamflow_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *LeaveGroupResponse) GetSuccess() bool {
@@ -1313,7 +1313,7 @@ type HeartbeatRequest struct {
 
 func (x *HeartbeatRequest) Reset() {
 	*x = HeartbeatRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[22]
+	mi := &file_streamflow_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1325,7 +1325,7 @@ func (x *HeartbeatRequest) String() string {
 func (*HeartbeatRequest) ProtoMessage() {}
 
 func (x *HeartbeatRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[22]
+	mi := &file_streamflow_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1338,7 +1338,7 @@ func (x *HeartbeatRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HeartbeatRequest.ProtoReflect.Descriptor instead.
 func (*HeartbeatRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{22}
+	return file_streamflow_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *HeartbeatRequest) GetConsumerId() string {
@@ -1359,7 +1359,7 @@ type HeartbeatResponse struct {
 
 func (x *HeartbeatResponse) Reset() {
 	*x = HeartbeatResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[23]
+	mi := &file_streamflow_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1371,7 +1371,7 @@ func (x *HeartbeatResponse) String() string {
 func (*HeartbeatResponse) ProtoMessage() {}
 
 func (x *HeartbeatResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[23]
+	mi := &file_streamflow_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1384,7 +1384,7 @@ func (x *HeartbeatResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HeartbeatResponse.ProtoReflect.Descriptor instead.
 func (*HeartbeatResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{23}
+	return file_streamflow_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *HeartbeatResponse) GetSuccess() bool {
@@ -1417,7 +1417,7 @@ type GroupInfoRequest struct {
 
 func (x *GroupInfoRequest) Reset() {
 	*x = GroupInfoRequest{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[24]
+	mi := &file_streamflow_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1429,7 +1429,7 @@ func (x *GroupInfoRequest) String() string {
 func (*GroupInfoRequest) ProtoMessage() {}
 
 func (x *GroupInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[24]
+	mi := &file_streamflow_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1442,7 +1442,7 @@ func (x *GroupInfoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroupInfoRequest.ProtoReflect.Descriptor instead.
 func (*GroupInfoRequest) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{24}
+	return file_streamflow_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GroupInfoRequest) GetGroupId() string {
@@ -1466,7 +1466,7 @@ type GroupInfoResponse struct {
 
 func (x *GroupInfoResponse) Reset() {
 	*x = GroupInfoResponse{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[25]
+	mi := &file_streamflow_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1478,7 +1478,7 @@ func (x *GroupInfoResponse) String() string {
 func (*GroupInfoResponse) ProtoMessage() {}
 
 func (x *GroupInfoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[25]
+	mi := &file_streamflow_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1491,7 +1491,7 @@ func (x *GroupInfoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GroupInfoResponse.ProtoReflect.Descriptor instead.
 func (*GroupInfoResponse) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{25}
+	return file_streamflow_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *GroupInfoResponse) GetGroupId() string {
@@ -1549,7 +1549,7 @@ type ConsumerMember struct {
 
 func (x *ConsumerMember) Reset() {
 	*x = ConsumerMember{}
-	mi := &file_api_proto_streamflow_proto_msgTypes[26]
+	mi := &file_streamflow_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1561,7 +1561,7 @@ func (x *ConsumerMember) String() string {
 func (*ConsumerMember) ProtoMessage() {}
 
 func (x *ConsumerMember) ProtoReflect() protoreflect.Message {
-	mi := &file_api_proto_streamflow_proto_msgTypes[26]
+	mi := &file_streamflow_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1574,7 +1574,7 @@ func (x *ConsumerMember) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConsumerMember.ProtoReflect.Descriptor instead.
 func (*ConsumerMember) Descriptor() ([]byte, []int) {
-	return file_api_proto_streamflow_proto_rawDescGZIP(), []int{26}
+	return file_streamflow_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ConsumerMember) GetConsumerId() string {
@@ -1612,11 +1612,244 @@ func (x *ConsumerMember) GetMetadata() map[string]string {
 	return nil
 }
 
-var File_api_proto_streamflow_proto protoreflect.FileDescriptor
+// Offset management messages
+type CommitOffsetRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ConsumerGroup string                 `protobuf:"bytes,1,opt,name=consumer_group,json=consumerGroup,proto3" json:"consumer_group,omitempty"`
+	Topic         string                 `protobuf:"bytes,2,opt,name=topic,proto3" json:"topic,omitempty"`
+	Partition     int32                  `protobuf:"varint,3,opt,name=partition,proto3" json:"partition,omitempty"`
+	Offset        int64                  `protobuf:"varint,4,opt,name=offset,proto3" json:"offset,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
 
-const file_api_proto_streamflow_proto_rawDesc = "" +
+func (x *CommitOffsetRequest) Reset() {
+	*x = CommitOffsetRequest{}
+	mi := &file_streamflow_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CommitOffsetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CommitOffsetRequest) ProtoMessage() {}
+
+func (x *CommitOffsetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_streamflow_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CommitOffsetRequest.ProtoReflect.Descriptor instead.
+func (*CommitOffsetRequest) Descriptor() ([]byte, []int) {
+	return file_streamflow_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *CommitOffsetRequest) GetConsumerGroup() string {
+	if x != nil {
+		return x.ConsumerGroup
+	}
+	return ""
+}
+
+func (x *CommitOffsetRequest) GetTopic() string {
+	if x != nil {
+		return x.Topic
+	}
+	return ""
+}
+
+func (x *CommitOffsetRequest) GetPartition() int32 {
+	if x != nil {
+		return x.Partition
+	}
+	return 0
+}
+
+func (x *CommitOffsetRequest) GetOffset() int64 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+type CommitOffsetResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CommitOffsetResponse) Reset() {
+	*x = CommitOffsetResponse{}
+	mi := &file_streamflow_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CommitOffsetResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CommitOffsetResponse) ProtoMessage() {}
+
+func (x *CommitOffsetResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_streamflow_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CommitOffsetResponse.ProtoReflect.Descriptor instead.
+func (*CommitOffsetResponse) Descriptor() ([]byte, []int) {
+	return file_streamflow_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *CommitOffsetResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *CommitOffsetResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type GetOffsetRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ConsumerGroup string                 `protobuf:"bytes,1,opt,name=consumer_group,json=consumerGroup,proto3" json:"consumer_group,omitempty"`
+	Topic         string                 `protobuf:"bytes,2,opt,name=topic,proto3" json:"topic,omitempty"`
+	Partition     int32                  `protobuf:"varint,3,opt,name=partition,proto3" json:"partition,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOffsetRequest) Reset() {
+	*x = GetOffsetRequest{}
+	mi := &file_streamflow_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOffsetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOffsetRequest) ProtoMessage() {}
+
+func (x *GetOffsetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_streamflow_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOffsetRequest.ProtoReflect.Descriptor instead.
+func (*GetOffsetRequest) Descriptor() ([]byte, []int) {
+	return file_streamflow_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *GetOffsetRequest) GetConsumerGroup() string {
+	if x != nil {
+		return x.ConsumerGroup
+	}
+	return ""
+}
+
+func (x *GetOffsetRequest) GetTopic() string {
+	if x != nil {
+		return x.Topic
+	}
+	return ""
+}
+
+func (x *GetOffsetRequest) GetPartition() int32 {
+	if x != nil {
+		return x.Partition
+	}
+	return 0
+}
+
+type GetOffsetResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Offset        int64                  `protobuf:"varint,1,opt,name=offset,proto3" json:"offset,omitempty"`
+	Error         string                 `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetOffsetResponse) Reset() {
+	*x = GetOffsetResponse{}
+	mi := &file_streamflow_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetOffsetResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetOffsetResponse) ProtoMessage() {}
+
+func (x *GetOffsetResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_streamflow_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetOffsetResponse.ProtoReflect.Descriptor instead.
+func (*GetOffsetResponse) Descriptor() ([]byte, []int) {
+	return file_streamflow_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *GetOffsetResponse) GetOffset() int64 {
+	if x != nil {
+		return x.Offset
+	}
+	return 0
+}
+
+func (x *GetOffsetResponse) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+var File_streamflow_proto protoreflect.FileDescriptor
+
+const file_streamflow_proto_rawDesc = "" +
 	"\n" +
-	"\x1aapi/proto/streamflow.proto\x12\rstreamflow.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\x01\n" +
+	"\x10streamflow.proto\x12\rstreamflow.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"\xa1\x01\n" +
 	"\aMessage\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\fR\x05value\x12\x1c\n" +
@@ -1740,10 +1973,28 @@ const file_api_proto_streamflow_proto_rawDesc = "" +
 	"\bmetadata\x18\x05 \x03(\v2+.streamflow.v1.ConsumerMember.MetadataEntryR\bmetadata\x1a;\n" +
 	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x012\xed\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x88\x01\n" +
+	"\x13CommitOffsetRequest\x12%\n" +
+	"\x0econsumer_group\x18\x01 \x01(\tR\rconsumerGroup\x12\x14\n" +
+	"\x05topic\x18\x02 \x01(\tR\x05topic\x12\x1c\n" +
+	"\tpartition\x18\x03 \x01(\x05R\tpartition\x12\x16\n" +
+	"\x06offset\x18\x04 \x01(\x03R\x06offset\"F\n" +
+	"\x14CommitOffsetResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x14\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error\"m\n" +
+	"\x10GetOffsetRequest\x12%\n" +
+	"\x0econsumer_group\x18\x01 \x01(\tR\rconsumerGroup\x12\x14\n" +
+	"\x05topic\x18\x02 \x01(\tR\x05topic\x12\x1c\n" +
+	"\tpartition\x18\x03 \x01(\x05R\tpartition\"A\n" +
+	"\x11GetOffsetResponse\x12\x16\n" +
+	"\x06offset\x18\x01 \x01(\x03R\x06offset\x12\x14\n" +
+	"\x05error\x18\x02 \x01(\tR\x05error2\xe5\x03\n" +
 	"\x0eMessageService\x12H\n" +
 	"\aProduce\x12\x1d.streamflow.v1.ProduceRequest\x1a\x1e.streamflow.v1.ProduceResponse\x12J\n" +
-	"\aConsume\x12\x1d.streamflow.v1.ConsumeRequest\x1a\x1e.streamflow.v1.ConsumeResponse0\x01\x12E\n" +
+	"\aConsume\x12\x1d.streamflow.v1.ConsumeRequest\x1a\x1e.streamflow.v1.ConsumeResponse0\x01\x12M\n" +
+	"\fConsumeBatch\x12\x1d.streamflow.v1.ConsumeRequest\x1a\x1e.streamflow.v1.ConsumeResponse\x12W\n" +
+	"\fCommitOffset\x12\".streamflow.v1.CommitOffsetRequest\x1a#.streamflow.v1.CommitOffsetResponse\x12N\n" +
+	"\tGetOffset\x12\x1f.streamflow.v1.GetOffsetRequest\x1a .streamflow.v1.GetOffsetResponse\x12E\n" +
 	"\x06Health\x12\x1c.streamflow.v1.HealthRequest\x1a\x1d.streamflow.v1.HealthResponse2\x95\x03\n" +
 	"\x10PartitionService\x12]\n" +
 	"\x0eListPartitions\x12$.streamflow.v1.ListPartitionsRequest\x1a%.streamflow.v1.ListPartitionsResponse\x12X\n" +
@@ -1758,19 +2009,19 @@ const file_api_proto_streamflow_proto_rawDesc = "" +
 	"\fGetGroupInfo\x12\x1f.streamflow.v1.GroupInfoRequest\x1a .streamflow.v1.GroupInfoResponseB/Z-github.com/Anujtr/streamflow-engine/api/protob\x06proto3"
 
 var (
-	file_api_proto_streamflow_proto_rawDescOnce sync.Once
-	file_api_proto_streamflow_proto_rawDescData []byte
+	file_streamflow_proto_rawDescOnce sync.Once
+	file_streamflow_proto_rawDescData []byte
 )
 
-func file_api_proto_streamflow_proto_rawDescGZIP() []byte {
-	file_api_proto_streamflow_proto_rawDescOnce.Do(func() {
-		file_api_proto_streamflow_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_api_proto_streamflow_proto_rawDesc), len(file_api_proto_streamflow_proto_rawDesc)))
+func file_streamflow_proto_rawDescGZIP() []byte {
+	file_streamflow_proto_rawDescOnce.Do(func() {
+		file_streamflow_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_streamflow_proto_rawDesc), len(file_streamflow_proto_rawDesc)))
 	})
-	return file_api_proto_streamflow_proto_rawDescData
+	return file_streamflow_proto_rawDescData
 }
 
-var file_api_proto_streamflow_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
-var file_api_proto_streamflow_proto_goTypes = []any{
+var file_streamflow_proto_msgTypes = make([]protoimpl.MessageInfo, 35)
+var file_streamflow_proto_goTypes = []any{
 	(*Message)(nil),                  // 0: streamflow.v1.Message
 	(*ProduceRequest)(nil),           // 1: streamflow.v1.ProduceRequest
 	(*ProduceResponse)(nil),          // 2: streamflow.v1.ProduceResponse
@@ -1798,78 +2049,88 @@ var file_api_proto_streamflow_proto_goTypes = []any{
 	(*GroupInfoRequest)(nil),         // 24: streamflow.v1.GroupInfoRequest
 	(*GroupInfoResponse)(nil),        // 25: streamflow.v1.GroupInfoResponse
 	(*ConsumerMember)(nil),           // 26: streamflow.v1.ConsumerMember
-	nil,                              // 27: streamflow.v1.HealthResponse.MetricsEntry
-	nil,                              // 28: streamflow.v1.RebalanceResponse.PartitionAssignmentsEntry
-	nil,                              // 29: streamflow.v1.JoinGroupRequest.MetadataEntry
-	nil,                              // 30: streamflow.v1.ConsumerMember.MetadataEntry
-	(*timestamppb.Timestamp)(nil),    // 31: google.protobuf.Timestamp
+	(*CommitOffsetRequest)(nil),      // 27: streamflow.v1.CommitOffsetRequest
+	(*CommitOffsetResponse)(nil),     // 28: streamflow.v1.CommitOffsetResponse
+	(*GetOffsetRequest)(nil),         // 29: streamflow.v1.GetOffsetRequest
+	(*GetOffsetResponse)(nil),        // 30: streamflow.v1.GetOffsetResponse
+	nil,                              // 31: streamflow.v1.HealthResponse.MetricsEntry
+	nil,                              // 32: streamflow.v1.RebalanceResponse.PartitionAssignmentsEntry
+	nil,                              // 33: streamflow.v1.JoinGroupRequest.MetadataEntry
+	nil,                              // 34: streamflow.v1.ConsumerMember.MetadataEntry
+	(*timestamppb.Timestamp)(nil),    // 35: google.protobuf.Timestamp
 }
-var file_api_proto_streamflow_proto_depIdxs = []int32{
-	31, // 0: streamflow.v1.Message.timestamp:type_name -> google.protobuf.Timestamp
+var file_streamflow_proto_depIdxs = []int32{
+	35, // 0: streamflow.v1.Message.timestamp:type_name -> google.protobuf.Timestamp
 	0,  // 1: streamflow.v1.ProduceRequest.messages:type_name -> streamflow.v1.Message
 	3,  // 2: streamflow.v1.ProduceResponse.results:type_name -> streamflow.v1.ProduceResult
 	0,  // 3: streamflow.v1.ConsumeResponse.messages:type_name -> streamflow.v1.Message
-	27, // 4: streamflow.v1.HealthResponse.metrics:type_name -> streamflow.v1.HealthResponse.MetricsEntry
+	31, // 4: streamflow.v1.HealthResponse.metrics:type_name -> streamflow.v1.HealthResponse.MetricsEntry
 	10, // 5: streamflow.v1.ListPartitionsResponse.partitions:type_name -> streamflow.v1.PartitionInfo
-	31, // 6: streamflow.v1.PartitionInfo.last_activity:type_name -> google.protobuf.Timestamp
-	28, // 7: streamflow.v1.RebalanceResponse.partition_assignments:type_name -> streamflow.v1.RebalanceResponse.PartitionAssignmentsEntry
+	35, // 6: streamflow.v1.PartitionInfo.last_activity:type_name -> google.protobuf.Timestamp
+	32, // 7: streamflow.v1.RebalanceResponse.partition_assignments:type_name -> streamflow.v1.RebalanceResponse.PartitionAssignmentsEntry
 	15, // 8: streamflow.v1.PartitionMetricsResponse.metrics:type_name -> streamflow.v1.PartitionMetrics
-	31, // 9: streamflow.v1.PartitionMetrics.last_activity:type_name -> google.protobuf.Timestamp
-	29, // 10: streamflow.v1.JoinGroupRequest.metadata:type_name -> streamflow.v1.JoinGroupRequest.MetadataEntry
+	35, // 9: streamflow.v1.PartitionMetrics.last_activity:type_name -> google.protobuf.Timestamp
+	33, // 10: streamflow.v1.JoinGroupRequest.metadata:type_name -> streamflow.v1.JoinGroupRequest.MetadataEntry
 	26, // 11: streamflow.v1.GroupInfoResponse.members:type_name -> streamflow.v1.ConsumerMember
-	31, // 12: streamflow.v1.GroupInfoResponse.created_at:type_name -> google.protobuf.Timestamp
-	31, // 13: streamflow.v1.GroupInfoResponse.last_rebalance:type_name -> google.protobuf.Timestamp
-	31, // 14: streamflow.v1.ConsumerMember.last_heartbeat:type_name -> google.protobuf.Timestamp
-	30, // 15: streamflow.v1.ConsumerMember.metadata:type_name -> streamflow.v1.ConsumerMember.MetadataEntry
+	35, // 12: streamflow.v1.GroupInfoResponse.created_at:type_name -> google.protobuf.Timestamp
+	35, // 13: streamflow.v1.GroupInfoResponse.last_rebalance:type_name -> google.protobuf.Timestamp
+	35, // 14: streamflow.v1.ConsumerMember.last_heartbeat:type_name -> google.protobuf.Timestamp
+	34, // 15: streamflow.v1.ConsumerMember.metadata:type_name -> streamflow.v1.ConsumerMember.MetadataEntry
 	1,  // 16: streamflow.v1.MessageService.Produce:input_type -> streamflow.v1.ProduceRequest
 	4,  // 17: streamflow.v1.MessageService.Consume:input_type -> streamflow.v1.ConsumeRequest
-	6,  // 18: streamflow.v1.MessageService.Health:input_type -> streamflow.v1.HealthRequest
-	8,  // 19: streamflow.v1.PartitionService.ListPartitions:input_type -> streamflow.v1.ListPartitionsRequest
-	11, // 20: streamflow.v1.PartitionService.RebalancePartitions:input_type -> streamflow.v1.RebalanceRequest
-	13, // 21: streamflow.v1.PartitionService.GetPartitionMetrics:input_type -> streamflow.v1.PartitionMetricsRequest
-	16, // 22: streamflow.v1.PartitionService.ScalePartitions:input_type -> streamflow.v1.ScalePartitionsRequest
-	18, // 23: streamflow.v1.ConsumerGroupService.JoinGroup:input_type -> streamflow.v1.JoinGroupRequest
-	20, // 24: streamflow.v1.ConsumerGroupService.LeaveGroup:input_type -> streamflow.v1.LeaveGroupRequest
-	22, // 25: streamflow.v1.ConsumerGroupService.Heartbeat:input_type -> streamflow.v1.HeartbeatRequest
-	24, // 26: streamflow.v1.ConsumerGroupService.GetGroupInfo:input_type -> streamflow.v1.GroupInfoRequest
-	2,  // 27: streamflow.v1.MessageService.Produce:output_type -> streamflow.v1.ProduceResponse
-	5,  // 28: streamflow.v1.MessageService.Consume:output_type -> streamflow.v1.ConsumeResponse
-	7,  // 29: streamflow.v1.MessageService.Health:output_type -> streamflow.v1.HealthResponse
-	9,  // 30: streamflow.v1.PartitionService.ListPartitions:output_type -> streamflow.v1.ListPartitionsResponse
-	12, // 31: streamflow.v1.PartitionService.RebalancePartitions:output_type -> streamflow.v1.RebalanceResponse
-	14, // 32: streamflow.v1.PartitionService.GetPartitionMetrics:output_type -> streamflow.v1.PartitionMetricsResponse
-	17, // 33: streamflow.v1.PartitionService.ScalePartitions:output_type -> streamflow.v1.ScalePartitionsResponse
-	19, // 34: streamflow.v1.ConsumerGroupService.JoinGroup:output_type -> streamflow.v1.JoinGroupResponse
-	21, // 35: streamflow.v1.ConsumerGroupService.LeaveGroup:output_type -> streamflow.v1.LeaveGroupResponse
-	23, // 36: streamflow.v1.ConsumerGroupService.Heartbeat:output_type -> streamflow.v1.HeartbeatResponse
-	25, // 37: streamflow.v1.ConsumerGroupService.GetGroupInfo:output_type -> streamflow.v1.GroupInfoResponse
-	27, // [27:38] is the sub-list for method output_type
-	16, // [16:27] is the sub-list for method input_type
+	4,  // 18: streamflow.v1.MessageService.ConsumeBatch:input_type -> streamflow.v1.ConsumeRequest
+	27, // 19: streamflow.v1.MessageService.CommitOffset:input_type -> streamflow.v1.CommitOffsetRequest
+	29, // 20: streamflow.v1.MessageService.GetOffset:input_type -> streamflow.v1.GetOffsetRequest
+	6,  // 21: streamflow.v1.MessageService.Health:input_type -> streamflow.v1.HealthRequest
+	8,  // 22: streamflow.v1.PartitionService.ListPartitions:input_type -> streamflow.v1.ListPartitionsRequest
+	11, // 23: streamflow.v1.PartitionService.RebalancePartitions:input_type -> streamflow.v1.RebalanceRequest
+	13, // 24: streamflow.v1.PartitionService.GetPartitionMetrics:input_type -> streamflow.v1.PartitionMetricsRequest
+	16, // 25: streamflow.v1.PartitionService.ScalePartitions:input_type -> streamflow.v1.ScalePartitionsRequest
+	18, // 26: streamflow.v1.ConsumerGroupService.JoinGroup:input_type -> streamflow.v1.JoinGroupRequest
+	20, // 27: streamflow.v1.ConsumerGroupService.LeaveGroup:input_type -> streamflow.v1.LeaveGroupRequest
+	22, // 28: streamflow.v1.ConsumerGroupService.Heartbeat:input_type -> streamflow.v1.HeartbeatRequest
+	24, // 29: streamflow.v1.ConsumerGroupService.GetGroupInfo:input_type -> streamflow.v1.GroupInfoRequest
+	2,  // 30: streamflow.v1.MessageService.Produce:output_type -> streamflow.v1.ProduceResponse
+	5,  // 31: streamflow.v1.MessageService.Consume:output_type -> streamflow.v1.ConsumeResponse
+	5,  // 32: streamflow.v1.MessageService.ConsumeBatch:output_type -> streamflow.v1.ConsumeResponse
+	28, // 33: streamflow.v1.MessageService.CommitOffset:output_type -> streamflow.v1.CommitOffsetResponse
+	30, // 34: streamflow.v1.MessageService.GetOffset:output_type -> streamflow.v1.GetOffsetResponse
+	7,  // 35: streamflow.v1.MessageService.Health:output_type -> streamflow.v1.HealthResponse
+	9,  // 36: streamflow.v1.PartitionService.ListPartitions:output_type -> streamflow.v1.ListPartitionsResponse
+	12, // 37: streamflow.v1.PartitionService.RebalancePartitions:output_type -> streamflow.v1.RebalanceResponse
+	14, // 38: streamflow.v1.PartitionService.GetPartitionMetrics:output_type -> streamflow.v1.PartitionMetricsResponse
+	17, // 39: streamflow.v1.PartitionService.ScalePartitions:output_type -> streamflow.v1.ScalePartitionsResponse
+	19, // 40: streamflow.v1.ConsumerGroupService.JoinGroup:output_type -> streamflow.v1.JoinGroupResponse
+	21, // 41: streamflow.v1.ConsumerGroupService.LeaveGroup:output_type -> streamflow.v1.LeaveGroupResponse
+	23, // 42: streamflow.v1.ConsumerGroupService.Heartbeat:output_type -> streamflow.v1.HeartbeatResponse
+	25, // 43: streamflow.v1.ConsumerGroupService.GetGroupInfo:output_type -> streamflow.v1.GroupInfoResponse
+	30, // [30:44] is the sub-list for method output_type
+	16, // [16:30] is the sub-list for method input_type
 	16, // [16:16] is the sub-list for extension type_name
 	16, // [16:16] is the sub-list for extension extendee
 	0,  // [0:16] is the sub-list for field type_name
 }
 
-func init() { file_api_proto_streamflow_proto_init() }
-func file_api_proto_streamflow_proto_init() {
-	if File_api_proto_streamflow_proto != nil {
+func init() { file_streamflow_proto_init() }
+func file_streamflow_proto_init() {
+	if File_streamflow_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_api_proto_streamflow_proto_rawDesc), len(file_api_proto_streamflow_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_streamflow_proto_rawDesc), len(file_streamflow_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   31,
+			NumMessages:   35,
 			NumExtensions: 0,
 			NumServices:   3,
 		},
-		GoTypes:           file_api_proto_streamflow_proto_goTypes,
-		DependencyIndexes: file_api_proto_streamflow_proto_depIdxs,
-		MessageInfos:      file_api_proto_streamflow_proto_msgTypes,
+		GoTypes:           file_streamflow_proto_goTypes,
+		DependencyIndexes: file_streamflow_proto_depIdxs,
+		MessageInfos:      file_streamflow_proto_msgTypes,
 	}.Build()
-	File_api_proto_streamflow_proto = out.File
-	file_api_proto_streamflow_proto_goTypes = nil
-	file_api_proto_streamflow_proto_depIdxs = nil
+	File_streamflow_proto = out.File
+	file_streamflow_proto_goTypes = nil
+	file_streamflow_proto_depIdxs = nil
 }

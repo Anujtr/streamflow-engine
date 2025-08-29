@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v6.32.0
-// source: api/proto/streamflow.proto
+// source: streamflow.proto
 
 package proto
 
@@ -19,9 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	MessageService_Produce_FullMethodName = "/streamflow.v1.MessageService/Produce"
-	MessageService_Consume_FullMethodName = "/streamflow.v1.MessageService/Consume"
-	MessageService_Health_FullMethodName  = "/streamflow.v1.MessageService/Health"
+	MessageService_Produce_FullMethodName      = "/streamflow.v1.MessageService/Produce"
+	MessageService_Consume_FullMethodName      = "/streamflow.v1.MessageService/Consume"
+	MessageService_ConsumeBatch_FullMethodName = "/streamflow.v1.MessageService/ConsumeBatch"
+	MessageService_CommitOffset_FullMethodName = "/streamflow.v1.MessageService/CommitOffset"
+	MessageService_GetOffset_FullMethodName    = "/streamflow.v1.MessageService/GetOffset"
+	MessageService_Health_FullMethodName       = "/streamflow.v1.MessageService/Health"
 )
 
 // MessageServiceClient is the client API for MessageService service.
@@ -30,6 +33,9 @@ const (
 type MessageServiceClient interface {
 	Produce(ctx context.Context, in *ProduceRequest, opts ...grpc.CallOption) (*ProduceResponse, error)
 	Consume(ctx context.Context, in *ConsumeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[ConsumeResponse], error)
+	ConsumeBatch(ctx context.Context, in *ConsumeRequest, opts ...grpc.CallOption) (*ConsumeResponse, error)
+	CommitOffset(ctx context.Context, in *CommitOffsetRequest, opts ...grpc.CallOption) (*CommitOffsetResponse, error)
+	GetOffset(ctx context.Context, in *GetOffsetRequest, opts ...grpc.CallOption) (*GetOffsetResponse, error)
 	Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
 }
 
@@ -70,6 +76,36 @@ func (c *messageServiceClient) Consume(ctx context.Context, in *ConsumeRequest, 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type MessageService_ConsumeClient = grpc.ServerStreamingClient[ConsumeResponse]
 
+func (c *messageServiceClient) ConsumeBatch(ctx context.Context, in *ConsumeRequest, opts ...grpc.CallOption) (*ConsumeResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ConsumeResponse)
+	err := c.cc.Invoke(ctx, MessageService_ConsumeBatch_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *messageServiceClient) CommitOffset(ctx context.Context, in *CommitOffsetRequest, opts ...grpc.CallOption) (*CommitOffsetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CommitOffsetResponse)
+	err := c.cc.Invoke(ctx, MessageService_CommitOffset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *messageServiceClient) GetOffset(ctx context.Context, in *GetOffsetRequest, opts ...grpc.CallOption) (*GetOffsetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetOffsetResponse)
+	err := c.cc.Invoke(ctx, MessageService_GetOffset_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *messageServiceClient) Health(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HealthResponse)
@@ -86,6 +122,9 @@ func (c *messageServiceClient) Health(ctx context.Context, in *HealthRequest, op
 type MessageServiceServer interface {
 	Produce(context.Context, *ProduceRequest) (*ProduceResponse, error)
 	Consume(*ConsumeRequest, grpc.ServerStreamingServer[ConsumeResponse]) error
+	ConsumeBatch(context.Context, *ConsumeRequest) (*ConsumeResponse, error)
+	CommitOffset(context.Context, *CommitOffsetRequest) (*CommitOffsetResponse, error)
+	GetOffset(context.Context, *GetOffsetRequest) (*GetOffsetResponse, error)
 	Health(context.Context, *HealthRequest) (*HealthResponse, error)
 	mustEmbedUnimplementedMessageServiceServer()
 }
@@ -102,6 +141,15 @@ func (UnimplementedMessageServiceServer) Produce(context.Context, *ProduceReques
 }
 func (UnimplementedMessageServiceServer) Consume(*ConsumeRequest, grpc.ServerStreamingServer[ConsumeResponse]) error {
 	return status.Errorf(codes.Unimplemented, "method Consume not implemented")
+}
+func (UnimplementedMessageServiceServer) ConsumeBatch(context.Context, *ConsumeRequest) (*ConsumeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConsumeBatch not implemented")
+}
+func (UnimplementedMessageServiceServer) CommitOffset(context.Context, *CommitOffsetRequest) (*CommitOffsetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommitOffset not implemented")
+}
+func (UnimplementedMessageServiceServer) GetOffset(context.Context, *GetOffsetRequest) (*GetOffsetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOffset not implemented")
 }
 func (UnimplementedMessageServiceServer) Health(context.Context, *HealthRequest) (*HealthResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Health not implemented")
@@ -156,6 +204,60 @@ func _MessageService_Consume_Handler(srv interface{}, stream grpc.ServerStream) 
 // This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
 type MessageService_ConsumeServer = grpc.ServerStreamingServer[ConsumeResponse]
 
+func _MessageService_ConsumeBatch_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ConsumeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).ConsumeBatch(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MessageService_ConsumeBatch_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).ConsumeBatch(ctx, req.(*ConsumeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MessageService_CommitOffset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CommitOffsetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).CommitOffset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MessageService_CommitOffset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).CommitOffset(ctx, req.(*CommitOffsetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MessageService_GetOffset_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOffsetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MessageServiceServer).GetOffset(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MessageService_GetOffset_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MessageServiceServer).GetOffset(ctx, req.(*GetOffsetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _MessageService_Health_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HealthRequest)
 	if err := dec(in); err != nil {
@@ -186,6 +288,18 @@ var MessageService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _MessageService_Produce_Handler,
 		},
 		{
+			MethodName: "ConsumeBatch",
+			Handler:    _MessageService_ConsumeBatch_Handler,
+		},
+		{
+			MethodName: "CommitOffset",
+			Handler:    _MessageService_CommitOffset_Handler,
+		},
+		{
+			MethodName: "GetOffset",
+			Handler:    _MessageService_GetOffset_Handler,
+		},
+		{
 			MethodName: "Health",
 			Handler:    _MessageService_Health_Handler,
 		},
@@ -197,7 +311,7 @@ var MessageService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "api/proto/streamflow.proto",
+	Metadata: "streamflow.proto",
 }
 
 const (
@@ -413,7 +527,7 @@ var PartitionService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/proto/streamflow.proto",
+	Metadata: "streamflow.proto",
 }
 
 const (
@@ -629,5 +743,5 @@ var ConsumerGroupService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "api/proto/streamflow.proto",
+	Metadata: "streamflow.proto",
 }

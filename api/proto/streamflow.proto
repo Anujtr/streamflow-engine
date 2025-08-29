@@ -9,6 +9,9 @@ import "google/protobuf/timestamp.proto";
 service MessageService {
   rpc Produce(ProduceRequest) returns (ProduceResponse);
   rpc Consume(ConsumeRequest) returns (stream ConsumeResponse);
+  rpc ConsumeBatch(ConsumeRequest) returns (ConsumeResponse);
+  rpc CommitOffset(CommitOffsetRequest) returns (CommitOffsetResponse);
+  rpc GetOffset(GetOffsetRequest) returns (GetOffsetResponse);
   rpc Health(HealthRequest) returns (HealthResponse);
 }
 
@@ -183,4 +186,28 @@ message ConsumerMember {
   string state = 3;
   google.protobuf.Timestamp last_heartbeat = 4;
   map<string, string> metadata = 5;
+}
+
+// Offset management messages
+message CommitOffsetRequest {
+  string consumer_group = 1;
+  string topic = 2;
+  int32 partition = 3;
+  int64 offset = 4;
+}
+
+message CommitOffsetResponse {
+  bool success = 1;
+  string error = 2;
+}
+
+message GetOffsetRequest {
+  string consumer_group = 1;
+  string topic = 2;
+  int32 partition = 3;
+}
+
+message GetOffsetResponse {
+  int64 offset = 1;
+  string error = 2;
 }

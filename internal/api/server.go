@@ -9,6 +9,7 @@ import (
 
 	pb "github.com/Anujtr/streamflow-engine/api/proto"
 	"github.com/Anujtr/streamflow-engine/internal/storage"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Server struct {
@@ -149,3 +150,107 @@ func (s *Server) Health(ctx context.Context, req *pb.HealthRequest) (*pb.HealthR
 }
 
 var startTime = time.Now()
+
+// ConsumeBatch consumes messages in a single request (non-streaming)
+func (s *Server) ConsumeBatch(ctx context.Context, req *pb.ConsumeRequest) (*pb.ConsumeResponse, error) {
+	if req.Topic == "" {
+		return &pb.ConsumeResponse{
+			Error: "topic name is required",
+		}, nil
+	}
+
+	messages, hasMore, err := s.storage.Consume(req.Topic, req.Partition, req.Offset, req.MaxMessages)
+	if err != nil {
+		return &pb.ConsumeResponse{
+			Error: fmt.Sprintf("failed to consume messages: %v", err),
+		}, nil
+	}
+
+	// Convert to protobuf messages
+	pbMessages := make([]*pb.Message, len(messages))
+	for i, msg := range messages {
+		pbMessages[i] = &pb.Message{
+			Key:       msg.Key,
+			Value:     msg.Value,
+			Partition: req.Partition,
+			Offset:    req.Offset + int64(i),
+			Timestamp: timestamppb.New(time.Now()),
+		}
+	}
+
+	return &pb.ConsumeResponse{
+		Messages: pbMessages,
+		HasMore:  hasMore,
+	}, nil
+}
+
+// CommitOffset commits the offset for a consumer group
+func (s *Server) CommitOffset(ctx context.Context, req *pb.CommitOffsetRequest) (*pb.CommitOffsetResponse, error) {
+	if req.ConsumerGroup == "" {
+		return &pb.CommitOffsetResponse{
+			Success: false,
+			Error:   "consumer group is required",
+		}, nil
+	}
+	if req.Topic == "" {
+		return &pb.CommitOffsetResponse{
+			Success: false,
+			Error:   "topic is required",
+		}, nil
+	}
+
+	// Get offset store if available
+	offsetStore := s.storage.GetOffsetStore()
+	if offsetStore == nil {
+		return &pb.CommitOffsetResponse{
+			Success: false,
+			Error:   "offset management not available (requires persistent storage)",
+		}, nil
+	}
+
+	err := offsetStore.CommitOffset(req.ConsumerGroup, req.Topic, req.Partition, req.Offset)
+	if err != nil {
+		return &pb.CommitOffsetResponse{
+			Success: false,
+			Error:   fmt.Sprintf("failed to commit offset: %v", err),
+		}, nil
+	}
+
+	return &pb.CommitOffsetResponse{
+		Success: true,
+	}, nil
+}
+
+// GetOffset retrieves the committed offset for a consumer group
+func (s *Server) GetOffset(ctx context.Context, req *pb.GetOffsetRequest) (*pb.GetOffsetResponse, error) {
+	if req.ConsumerGroup == "" {
+		return &pb.GetOffsetResponse{
+			Error: "consumer group is required",
+		}, nil
+	}
+	if req.Topic == "" {
+		return &pb.GetOffsetResponse{
+			Error: "topic is required",
+		}, nil
+	}
+
+	// Get offset store if available
+	offsetStore := s.storage.GetOffsetStore()
+	if offsetStore == nil {
+		// Return offset 0 if no persistent storage
+		return &pb.GetOffsetResponse{
+			Offset: 0,
+		}, nil
+	}
+
+	offset, err := offsetStore.GetOffset(req.ConsumerGroup, req.Topic, req.Partition)
+	if err != nil {
+		return &pb.GetOffsetResponse{
+			Error: fmt.Sprintf("failed to get offset: %v", err),
+		}, nil
+	}
+
+	return &pb.GetOffsetResponse{
+		Offset: offset,
+	}, nil
+}

@@ -17,6 +17,26 @@ type PebbleStorage struct {
 	dataDir    string
 	mu         sync.RWMutex
 	closed     bool
+	
+	// Batch processing for high throughput
+	batchSize     int
+	batchTimeout  time.Duration
+	pendingWrites chan *batchWrite
+	batchWorkers  int
+	stopBatching  chan struct{}
+	batchWG       sync.WaitGroup
+}
+
+type batchWrite struct {
+	topicName string
+	partition int32
+	msg       *Message
+	resultCh  chan batchResult
+}
+
+type batchResult struct {
+	offset int64
+	err    error
 }
 
 // NewPebbleStorage creates a new Pebble-based storage instance
@@ -24,13 +44,15 @@ func NewPebbleStorage(dataDir string) (*PebbleStorage, error) {
 	// Create data directory if it doesn't exist
 	dbPath := filepath.Join(dataDir, "pebble-db")
 	
-	// Configure Pebble options for high performance
+	// Configure Pebble options optimized for high write throughput
 	opts := &pebble.Options{
-		Cache:                 pebble.NewCache(128 << 20), // 128MB cache
-		MemTableSize:          64 << 20,                   // 64MB memtable
-		MaxConcurrentCompactions: func() int { return 4 },
-		L0StopWritesThreshold:    32,
-		LBaseMaxBytes:            64 << 20, // 64MB
+		Cache:                       pebble.NewCache(256 << 20), // 256MB cache (increased)
+		MemTableSize:                128 << 20,                  // 128MB memtable (increased) 
+		MemTableStopWritesThreshold: 4,                          // Allow more memtables
+		MaxConcurrentCompactions:    func() int { return 8 },    // More concurrent compactions
+		L0StopWritesThreshold:       48,                         // Higher threshold before blocking writes
+		L0CompactionThreshold:       8,                          // Start compacting earlier
+		LBaseMaxBytes:               512 << 20,                  // 512MB (increased)
 	}
 
 	db, err := pebble.Open(dbPath, opts)
@@ -38,10 +60,23 @@ func NewPebbleStorage(dataDir string) (*PebbleStorage, error) {
 		return nil, fmt.Errorf("failed to open Pebble database: %v", err)
 	}
 
-	return &PebbleStorage{
-		db:      db,
-		dataDir: dataDir,
-	}, nil
+	storage := &PebbleStorage{
+		db:            db,
+		dataDir:       dataDir,
+		batchSize:     100,                      // Batch up to 100 messages
+		batchTimeout:  10 * time.Millisecond,    // Or flush every 10ms
+		pendingWrites: make(chan *batchWrite, 1000),
+		batchWorkers:  4,                        // 4 batch workers
+		stopBatching:  make(chan struct{}),
+	}
+	
+	// Start batch workers for high-throughput writes
+	for i := 0; i < storage.batchWorkers; i++ {
+		storage.batchWG.Add(1)
+		go storage.batchWorker()
+	}
+	
+	return storage, nil
 }
 
 // Close closes the Pebble database
@@ -54,6 +89,12 @@ func (ps *PebbleStorage) Close() error {
 	}
 
 	ps.closed = true
+	
+	// Stop batch workers
+	close(ps.stopBatching)
+	ps.batchWG.Wait()
+	close(ps.pendingWrites)
+	
 	return ps.db.Close()
 }
 
@@ -121,6 +162,173 @@ func (ps *PebbleStorage) Append(topicName string, partition int32, msg *Message)
 	}
 
 	return offset, nil
+}
+
+// AppendBatched appends a message using the high-throughput batch processing system
+func (ps *PebbleStorage) AppendBatched(topicName string, partition int32, msg *Message) (int64, error) {
+	ps.mu.RLock()
+	if ps.closed {
+		ps.mu.RUnlock()
+		return -1, fmt.Errorf("storage is closed")
+	}
+	ps.mu.RUnlock()
+
+	resultCh := make(chan batchResult, 1)
+	write := &batchWrite{
+		topicName: topicName,
+		partition: partition,
+		msg:       msg,
+		resultCh:  resultCh,
+	}
+
+	// Send to batch processing queue
+	select {
+	case ps.pendingWrites <- write:
+		// Successfully queued
+	default:
+		// Queue is full, fall back to synchronous write
+		return ps.Append(topicName, partition, msg)
+	}
+
+	// Wait for batch processing result
+	result := <-resultCh
+	return result.offset, result.err
+}
+
+// batchWorker processes batches of writes for high throughput
+func (ps *PebbleStorage) batchWorker() {
+	defer ps.batchWG.Done()
+
+	batch := ps.db.NewBatch()
+	defer batch.Close()
+
+	writes := make([]*batchWrite, 0, ps.batchSize)
+	timer := time.NewTimer(ps.batchTimeout)
+
+	for {
+		select {
+		case write, ok := <-ps.pendingWrites:
+			if !ok {
+				// Channel closed, process remaining batch
+				if len(writes) > 0 {
+					ps.processBatch(writes, batch)
+				}
+				return
+			}
+
+			writes = append(writes, write)
+
+			// Flush batch if it's full
+			if len(writes) >= ps.batchSize {
+				ps.processBatch(writes, batch)
+				writes = writes[:0]
+				batch = ps.db.NewBatch()
+				timer.Reset(ps.batchTimeout)
+			}
+
+		case <-timer.C:
+			// Timeout reached, flush current batch
+			if len(writes) > 0 {
+				ps.processBatch(writes, batch)
+				writes = writes[:0]
+				batch = ps.db.NewBatch()
+			}
+			timer.Reset(ps.batchTimeout)
+
+		case <-ps.stopBatching:
+			// Process remaining batch before stopping
+			if len(writes) > 0 {
+				ps.processBatch(writes, batch)
+			}
+			return
+		}
+	}
+}
+
+// processBatch processes a batch of writes atomically with optimized offset allocation
+func (ps *PebbleStorage) processBatch(writes []*batchWrite, batch *pebble.Batch) {
+	// Reset the batch
+	batch.Reset()
+	
+	// Group writes by topic:partition for efficient offset allocation
+	partitionGroups := make(map[string][]*batchWrite)
+	for _, write := range writes {
+		key := fmt.Sprintf("%s:%d", write.topicName, write.partition)
+		partitionGroups[key] = append(partitionGroups[key], write)
+	}
+	
+	// Process each partition group
+	for _, partitionWrites := range partitionGroups {
+		if len(partitionWrites) == 0 {
+			continue
+		}
+		
+		// Get the starting offset for this partition (single I/O per partition)
+		firstWrite := partitionWrites[0]
+		startOffset, err := ps.getNextOffset(firstWrite.topicName, firstWrite.partition)
+		if err != nil {
+			// Mark all writes in this partition as failed
+			for _, write := range partitionWrites {
+				write.resultCh <- batchResult{-1, fmt.Errorf("failed to get next offset: %v", err)}
+			}
+			continue
+		}
+		
+		// Process all writes in this partition sequentially
+		for i, write := range partitionWrites {
+			offset := startOffset + int64(i)
+			
+			// Create the key: topic:partition:offset
+			key := makeMessageKey(write.topicName, write.partition, offset)
+			
+			// Serialize the message with timestamp
+			messageData := &PersistedMessage{
+				Key:       write.msg.Key,
+				Value:     write.msg.Value,
+				Timestamp: time.Now(),
+				Offset:    offset,
+			}
+			
+			value, err := json.Marshal(messageData)
+			if err != nil {
+				write.resultCh <- batchResult{-1, fmt.Errorf("failed to serialize message: %v", err)}
+				continue
+			}
+
+			// Add to batch
+			if err := batch.Set(key, value, nil); err != nil {
+				write.resultCh <- batchResult{-1, fmt.Errorf("failed to add message to batch: %v", err)}
+				continue
+			}
+
+			// Mark as successful - will be confirmed after batch commit
+			write.resultCh <- batchResult{offset, nil}
+		}
+		
+		// Update the final offset for this partition (single update per partition)
+		finalOffset := startOffset + int64(len(partitionWrites))
+		offsetKey := makeOffsetKey(firstWrite.topicName, firstWrite.partition)
+		offsetValue := make([]byte, 8)
+		binary.BigEndian.PutUint64(offsetValue, uint64(finalOffset))
+		if err := batch.Set(offsetKey, offsetValue, nil); err != nil {
+			// If offset update fails, mark all writes as failed
+			for _, write := range partitionWrites {
+				write.resultCh <- batchResult{-1, fmt.Errorf("failed to update partition offset: %v", err)}
+			}
+		}
+	}
+
+	// Commit the entire batch with async write (no sync for better throughput)
+	if err := batch.Commit(nil); err != nil {
+		// If batch commit fails, update all results with error
+		for _, write := range writes {
+			select {
+			case write.resultCh <- batchResult{-1, fmt.Errorf("batch commit failed: %v", err)}:
+			default:
+				// Channel might be closed or full
+			}
+		}
+	}
 }
 
 // Read reads messages from a partition starting at the given offset

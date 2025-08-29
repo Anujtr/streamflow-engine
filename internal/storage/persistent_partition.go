@@ -34,11 +34,15 @@ func (pp *PersistentPartition) Append(msg *Message) int64 {
 		Value: msg.Value,
 	}
 
-	offset, err := pp.storage.Append(pp.topic, pp.ID, persistentMsg)
+	// Use batched append for much better throughput
+	offset, err := pp.storage.AppendBatched(pp.topic, pp.ID, persistentMsg)
 	if err != nil {
-		// For now, return -1 on error to maintain compatibility
-		// In a full implementation, we'd want to handle this more gracefully
-		return -1
+		// Fall back to synchronous append if batched fails
+		offset, err = pp.storage.Append(pp.topic, pp.ID, persistentMsg)
+		if err != nil {
+			// Return -1 on error to maintain compatibility
+			return -1
+		}
 	}
 
 	return offset

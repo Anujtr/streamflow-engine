@@ -9,10 +9,10 @@ func TestNewStorage(t *testing.T) {
 
 	if storage == nil {
 		t.Error("Expected non-nil storage")
-	}
-
-	if storage.topics == nil {
-		t.Error("Expected non-nil topics map")
+	} else {
+		if storage.topics == nil {
+			t.Error("Expected non-nil topics map")
+		}
 	}
 
 	topics := storage.ListTopics()

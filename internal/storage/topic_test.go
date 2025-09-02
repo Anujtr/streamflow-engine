@@ -122,7 +122,7 @@ func TestTopic_Consume(t *testing.T) {
 	}
 
 	// Should get some messages (depends on hash distribution)
-	if len(messages) < 0 {
+	if len(messages) == 0 {
 		t.Error("Expected non-negative number of messages")
 	}
 

@@ -90,17 +90,29 @@ func NewManagedConsumer(config ManagedConsumerConfig) (*ManagedConsumer, error) 
 
 // ConsumeFromCommittedOffset consumes messages starting from the last committed offset
 func (mc *ManagedConsumer) ConsumeFromCommittedOffset(ctx context.Context, topic string, partition int32, maxMessages int32) ([]*ConsumeMessage, error) {
-	// Get the last committed offset
-	startOffset, err := mc.getCommittedOffset(ctx, topic, partition)
+	// Get the last committed offset with timeout
+	offsetCtx, offsetCancel := context.WithTimeout(ctx, mc.config.Timeout)
+	defer offsetCancel()
+	
+	startOffset, err := mc.getCommittedOffset(offsetCtx, topic, partition)
 	if err != nil {
+		log.Printf("[ManagedConsumer] Failed to get committed offset for %s:%d: %v", topic, partition, err)
 		return nil, fmt.Errorf("failed to get committed offset: %v", err)
 	}
+	
+	log.Printf("[ManagedConsumer] Retrieved committed offset %d for %s:%d", startOffset, topic, partition)
 
-	// Consume messages from that offset
-	messages, err := mc.consumeMessages(ctx, topic, partition, startOffset, maxMessages)
+	// Consume messages from that offset with timeout
+	consumeCtx, consumeCancel := context.WithTimeout(ctx, mc.config.Timeout)
+	defer consumeCancel()
+	
+	messages, err := mc.consumeMessages(consumeCtx, topic, partition, startOffset, maxMessages)
 	if err != nil {
+		log.Printf("[ManagedConsumer] Failed to consume messages from %s:%d at offset %d: %v", topic, partition, startOffset, err)
 		return nil, err
 	}
+	
+	log.Printf("[ManagedConsumer] Consumed %d messages from %s:%d starting at offset %d", len(messages), topic, partition, startOffset)
 
 	// Update processing offset
 	if len(messages) > 0 {
@@ -129,6 +141,10 @@ func (mc *ManagedConsumer) ConsumeFromOffset(ctx context.Context, topic string, 
 
 // CommitOffset commits the offset for a topic and partition
 func (mc *ManagedConsumer) CommitOffset(ctx context.Context, topic string, partition int32, offset int64) error {
+	// Add timeout protection
+	commitCtx, commitCancel := context.WithTimeout(ctx, mc.config.Timeout)
+	defer commitCancel()
+	
 	req := &pb.CommitOffsetRequest{
 		ConsumerGroup: mc.config.ConsumerGroup,
 		Topic:         topic,
@@ -136,11 +152,16 @@ func (mc *ManagedConsumer) CommitOffset(ctx context.Context, topic string, parti
 		Offset:        offset,
 	}
 
-	_, err := mc.client.CommitOffset(ctx, req)
+	log.Printf("[ManagedConsumer] Committing offset %d for %s:%d (group: %s)", offset, topic, partition, mc.config.ConsumerGroup)
+	
+	_, err := mc.client.CommitOffset(commitCtx, req)
 	if err != nil {
+		log.Printf("[ManagedConsumer] Failed to commit offset %d for %s:%d: %v", offset, topic, partition, err)
 		mc.incrementErrors()
 		return fmt.Errorf("failed to commit offset: %v", err)
 	}
+	
+	log.Printf("[ManagedConsumer] Successfully committed offset %d for %s:%d", offset, topic, partition)
 
 	// Update local committed offset tracking
 	mc.setCommittedOffset(topic, partition, offset)
@@ -152,15 +173,35 @@ func (mc *ManagedConsumer) CommitOffset(ctx context.Context, topic string, parti
 // CommitProcessingOffsets commits all current processing offsets
 func (mc *ManagedConsumer) CommitProcessingOffsets(ctx context.Context) error {
 	mc.offsetMu.RLock()
-	defer mc.offsetMu.RUnlock()
-
+	offsetsCopy := make(map[string]map[int32]int64)
 	for topic, partitions := range mc.processingOffsets {
+		offsetsCopy[topic] = make(map[int32]int64)
+		for partition, offset := range partitions {
+			offsetsCopy[topic][partition] = offset
+		}
+	}
+	mc.offsetMu.RUnlock()
+
+	if len(offsetsCopy) == 0 {
+		log.Printf("[ManagedConsumer] No processing offsets to commit")
+		return nil
+	}
+
+	log.Printf("[ManagedConsumer] Committing %d topic(s) processing offsets", len(offsetsCopy))
+	
+	var commitErrors []error
+	for topic, partitions := range offsetsCopy {
 		for partition, offset := range partitions {
 			if err := mc.CommitOffset(ctx, topic, partition, offset); err != nil {
-				log.Printf("Failed to commit offset for %s partition %d: %v", topic, partition, err)
-				return err
+				log.Printf("[ManagedConsumer] Failed to commit offset for %s partition %d: %v", topic, partition, err)
+				commitErrors = append(commitErrors, err)
+				// Continue trying other offsets instead of failing fast
 			}
 		}
+	}
+
+	if len(commitErrors) > 0 {
+		return fmt.Errorf("failed to commit %d offset(s): %v", len(commitErrors), commitErrors[0])
 	}
 
 	return nil
@@ -206,6 +247,10 @@ func (mc *ManagedConsumer) GetMetrics() ManagedConsumerMetrics {
 // Private methods
 
 func (mc *ManagedConsumer) consumeMessages(ctx context.Context, topic string, partition int32, offset int64, maxMessages int32) ([]*ConsumeMessage, error) {
+	// Add deadline protection for consume requests
+	consumeCtx, consumeCancel := context.WithTimeout(ctx, mc.config.Timeout)
+	defer consumeCancel()
+	
 	req := &pb.ConsumeRequest{
 		Topic:         topic,
 		ConsumerGroup: mc.config.ConsumerGroup,
@@ -214,8 +259,11 @@ func (mc *ManagedConsumer) consumeMessages(ctx context.Context, topic string, pa
 		MaxMessages:   maxMessages,
 	}
 
-	resp, err := mc.client.ConsumeBatch(ctx, req)
+	log.Printf("[ManagedConsumer] Consuming messages from %s:%d at offset %d (max: %d)", topic, partition, offset, maxMessages)
+	
+	resp, err := mc.client.ConsumeBatch(consumeCtx, req)
 	if err != nil {
+		log.Printf("[ManagedConsumer] gRPC ConsumeBatch failed for %s:%d: %v", topic, partition, err)
 		mc.incrementErrors()
 		return nil, fmt.Errorf("failed to consume messages: %v", err)
 	}
@@ -247,23 +295,32 @@ func (mc *ManagedConsumer) getCommittedOffset(ctx context.Context, topic string,
 	mc.offsetMu.RLock()
 	if topicOffsets, exists := mc.committedOffsets[topic]; exists {
 		if offset, exists := topicOffsets[partition]; exists {
+			log.Printf("[ManagedConsumer] Using cached offset %d for %s:%d", offset, topic, partition)
 			mc.offsetMu.RUnlock()
 			return offset, nil
 		}
 	}
 	mc.offsetMu.RUnlock()
 
-	// Fetch from server
+	// Fetch from server with timeout protection
+	getCtx, getCancel := context.WithTimeout(ctx, mc.config.Timeout)
+	defer getCancel()
+	
 	req := &pb.GetOffsetRequest{
 		ConsumerGroup: mc.config.ConsumerGroup,
 		Topic:         topic,
 		Partition:     partition,
 	}
 
-	resp, err := mc.client.GetOffset(ctx, req)
+	log.Printf("[ManagedConsumer] Fetching offset from server for %s:%d (group: %s)", topic, partition, mc.config.ConsumerGroup)
+	
+	resp, err := mc.client.GetOffset(getCtx, req)
 	if err != nil {
+		log.Printf("[ManagedConsumer] Failed to get offset from server for %s:%d: %v", topic, partition, err)
 		return 0, fmt.Errorf("failed to get offset: %v", err)
 	}
+	
+	log.Printf("[ManagedConsumer] Retrieved offset %d from server for %s:%d", resp.Offset, topic, partition)
 
 	// Cache the result
 	mc.setCommittedOffset(topic, partition, resp.Offset)
@@ -293,16 +350,22 @@ func (mc *ManagedConsumer) setProcessingOffset(topic string, partition int32, of
 func (mc *ManagedConsumer) startAutoCommit() {
 	mc.autoCommitTicker = time.NewTicker(mc.config.AutoCommitInterval)
 	
+	log.Printf("[ManagedConsumer] Starting auto-commit with interval %v", mc.config.AutoCommitInterval)
+	
 	go func() {
 		for {
 			select {
 			case <-mc.autoCommitTicker.C:
+				log.Printf("[ManagedConsumer] Auto-commit timer triggered")
 				ctx, cancel := context.WithTimeout(context.Background(), mc.config.Timeout)
 				if err := mc.CommitProcessingOffsets(ctx); err != nil {
-					log.Printf("Auto-commit failed: %v", err)
+					log.Printf("[ManagedConsumer] Auto-commit failed: %v", err)
+				} else {
+					log.Printf("[ManagedConsumer] Auto-commit successful")
 				}
 				cancel()
 			case <-mc.stopAutoCommit:
+				log.Printf("[ManagedConsumer] Auto-commit stopped")
 				return
 			}
 		}

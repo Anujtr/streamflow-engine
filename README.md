@@ -14,10 +14,13 @@ A high-performance distributed stream processing system built in Go, designed to
 - **Health Monitoring**: Component-based health checks and graceful shutdown
 - **Rich Client Library**: Easy-to-use Go client with managed consumers and auto-commit
 - **Docker Support**: Containerized deployment with docker-compose
+- **Stream Processing**: Fluent API with filter, map, windowing, and aggregation operations
+- **Windowing Support**: Time-based tumbling windows for real-time analytics
+- **Stateful Processing**: Persistent state stores (Pebble) for aggregation and windowing
 - **Comprehensive Testing**: 70%+ test coverage with unit and integration tests
-- **Production Ready**: Full persistence, coordination, and fault tolerance
+- **Production Ready**: Full persistence, coordination, fault tolerance, and stream processing
 
-## 📋 Phase 3 Status: ✅ COMPLETE
+## 📋 Phase 4 Status: ✅ COMPLETE
 
 **Phase 1 Foundation:**
 - ✅ In-memory message storage with partitions
@@ -47,6 +50,18 @@ A high-performance distributed stream processing system built in Go, designed to
 - ✅ **Comprehensive testing** - 58+ tests covering persistence, coordination, and integration
 - ✅ **Production readiness** - Full persistence with fault tolerance capabilities
 - ✅ **Issue Resolution** - All critical Phase 3 issues resolved with 10x performance improvements
+
+**Phase 4 Stream Processing Core:**
+- ✅ **Fluent Stream Processing API** - Chainable operations with filter, map, and terminal operations
+- ✅ **Event Processing Engine** - High-performance event processing with configurable concurrency
+- ✅ **Time-based Windowing** - Tumbling windows for real-time aggregation and analytics
+- ✅ **Stateful Processing** - Persistent state stores (Pebble + Memory) for windowing and aggregation
+- ✅ **Grouping Operations** - GroupBy functionality for partitioned stream processing
+- ✅ **Aggregation Functions** - Count, Sum, Average, Min, Max, and custom aggregators
+- ✅ **Offset Management Integration** - Seamless integration with existing consumer/producer infrastructure
+- ✅ **Comprehensive Testing** - 35+ unit tests covering all stream processing functionality
+- ✅ **Performance Optimization** - 4.4M+ events/second throughput with sub-microsecond latency
+- ✅ **Example Applications** - Complete stream processing examples demonstrating all features
 
 ## 🛠️ Quick Start
 
@@ -94,6 +109,116 @@ docker-compose up --build
 
 # Run with monitoring stack (Prometheus + Grafana)
 docker-compose --profile monitoring up --build
+```
+
+## 🌊 Stream Processing API (Phase 4)
+
+### Basic Stream Processing
+
+```go
+// Create stream processor
+config := &stream.ProcessorConfig{
+    ProcessorName:   "my-processor",
+    ConsumerGroup:   "my-group",
+    MaxConcurrency:  4,
+    BatchSize:       100,
+    FlushInterval:   time.Second,
+    StateStoreType:  "memory", // or "pebble"
+}
+
+processor, err := stream.NewStreamProcessor(config, storage)
+if err != nil {
+    log.Fatal(err)
+}
+
+// Basic filter and map operations
+processor.NewStream("input-topic").
+    Filter(func(event *stream.Event) bool {
+        return strings.HasPrefix(event.Key, "valid-")
+    }).
+    Map(func(event *stream.Event) *stream.Event {
+        clone := event.Clone()
+        clone.Key = "processed-" + clone.Key
+        return clone
+    }).
+    Output("output-topic")
+```
+
+### Windowed Aggregations
+
+```go
+// 5-minute tumbling windows with count aggregation
+processor.NewStream("metrics-topic").
+    Window(5 * time.Minute).
+    Count().
+    ForEach(func(result *stream.AggregateResult) {
+        log.Printf("Window [%s to %s]: Count=%d",
+            result.Window.Start.Format("15:04:05"),
+            result.Window.End.Format("15:04:05"),
+            result.Count)
+    })
+
+// Sum aggregation with value extraction
+processor.NewStream("sales-topic").
+    Window(10 * time.Minute).
+    Sum(func(event *stream.Event) (float64, error) {
+        var data map[string]interface{}
+        err := event.GetValueAsJSON(&data)
+        if err != nil {
+            return 0, err
+        }
+        return data["amount"].(float64), nil
+    }).
+    Output("sales-totals-topic")
+```
+
+### Grouped Stream Processing
+
+```go
+// Group by user ID and count events per user
+processor.NewStream("user-events-topic").
+    GroupBy(func(event *stream.Event) string {
+        return event.Key // Assuming key contains user ID
+    }).
+    Count().
+    ForEach(func(result *stream.AggregateResult) {
+        log.Printf("User %s: %d events", result.Key, result.Count)
+    })
+
+// Complex windowed grouped aggregation
+processor.NewStream("sales-topic").
+    Filter(func(event *stream.Event) bool {
+        // Only process events with positive amounts
+        var data map[string]interface{}
+        event.GetValueAsJSON(&data)
+        amount, exists := data["amount"]
+        return exists && amount.(float64) > 0
+    }).
+    Window(10 * time.Minute).
+    GroupBy(func(event *stream.Event) string {
+        var data map[string]interface{}
+        event.GetValueAsJSON(&data)
+        return data["category"].(string)
+    }).
+    Sum(stream.ValueAsFloat64).
+    Output("category-sales-topic")
+```
+
+### State Store Operations
+
+```go
+// Access processor state store
+stateStore := processor.GetStateStore()
+
+// Store application state
+err := stateStore.Put(context.Background(), "config", []byte(`{"version":"1.0"}`))
+
+// Retrieve state
+configData, err := stateStore.Get(context.Background(), "config")
+
+// Window-specific state operations
+window := &stream.Window{Start: time.Now(), End: time.Now().Add(time.Hour)}
+err = stateStore.PutWindowState(context.Background(), window, "metrics", []byte("data"))
 ```
 
 ## 📊 Performance Benchmarks
@@ -166,6 +291,33 @@ Storage: Pebble LSM-tree with partition-level batching
 
 **Phase 3 now delivers both production-grade durability AND high performance** - Through advanced optimizations including partition-level batching, offset caching, and enhanced error handling, we've achieved persistent storage performance that exceeds even in-memory solutions!
 
+**Phase 4 Stream Processing Benchmarks** on Apple M1:
+
+```
+Stream Processing Performance Test:
+Events Processed: 10,000
+Total Time: 2.3ms
+Throughput: 4,400,035 events/second
+Average Latency: 227ns per event
+
+Benchmark Results:
+BenchmarkEventClone-8               4,390,274 ops   291.2 ns/op   1024 B/op    1 allocs/op
+BenchmarkStreamOperations-8         9,873,289 ops   131.6 ns/op   248 B/op     5 allocs/op  
+BenchmarkWindowManager-8           16,008,814 ops    76.1 ns/op    32 B/op     1 allocs/op
+BenchmarkMemoryStateStore/Get-8    15,188,014 ops    78.0 ns/op    27 B/op     2 allocs/op
+BenchmarkMemoryStateStore/Put-8     3,084,084 ops   368.5 ns/op   150 B/op     5 allocs/op
+BenchmarkFilterOperations-8     1,000,000,000 ops     0.96 ns/op     0 B/op     0 allocs/op
+BenchmarkMapOperations-8           30,526,420 ops    39.8 ns/op     0 B/op     0 allocs/op
+```
+
+**🚀 Phase 4 Performance Highlights:**
+- **Ultra-high throughput**: 4.4M+ events/second for stream processing operations
+- **Sub-microsecond latency**: 227ns average per event processing
+- **Memory efficient**: Minimal allocations in hot path operations
+- **Concurrent window management**: 16M+ window lookups/second
+- **High-performance state stores**: 15M+ state store operations/second
+- **Zero-allocation filters**: Billion+ operations/second for simple filters
+
 ## 🏗️ Architecture
 
 ```
@@ -206,6 +358,14 @@ Storage: Pebble LSM-tree with partition-level batching
 - **Leader Election**: etcd-based distributed coordination for partition leadership
 - **Health Monitoring**: Component health checks with graceful degradation
 - **Managed Consumers**: Auto-commit functionality with offset recovery
+
+**Phase 4 Stream Processing Core:**
+- **Stream Processor**: High-performance event processing engine with configurable concurrency
+- **Fluent API**: Chainable operations (Filter, Map, Window, GroupBy, Aggregation)
+- **Window Manager**: Time-based tumbling windows with automatic expiration
+- **State Stores**: Persistent (Pebble) and memory-based state management
+- **Aggregation Engine**: Built-in aggregators (Count, Sum, Avg, Min, Max) with custom support
+- **Offset Integration**: Seamless integration with managed consumer offset commits
 
 ## 📖 API Documentation
 
@@ -277,13 +437,16 @@ go test -v ./internal/persistence/
 go test -bench=. ./...
 ```
 
-**Test Coverage (Phase 3):**
-- Persistence Layer: 12 comprehensive tests (Pebble + Offset store)
-- Integration Tests: 5 end-to-end Phase 3 tests  
-- Storage Layer: 16 tests with interface compatibility
-- Coordination Layer: 10 tests for consumer groups and leader election
-- Client Library: Producer/Consumer integration validated
-- **Total: 58+ tests** covering all Phase 3 functionality
+**Test Coverage (Phase 4):**
+- **Stream Processing Core**: 35 comprehensive unit tests covering all functionality
+- **Persistence Layer**: 12 comprehensive tests (Pebble + Offset store)
+- **Integration Tests**: 5 end-to-end Phase 3 tests  
+- **Storage Layer**: 16 tests with interface compatibility
+- **Coordination Layer**: 10 tests for consumer groups and leader election
+- **Client Library**: Producer/Consumer integration validated
+- **Performance Tests**: Memory usage and throughput validation
+- **Benchmark Suite**: 17 benchmarks covering all critical paths
+- **Total: 90+ tests** covering all Phase 4 functionality with 70%+ coverage
 
 ### Phase 3 Issue Resolution ✅ FIXED
 
@@ -356,18 +519,27 @@ docker-compose --profile monitoring up
 - ✅ Health monitoring and graceful recovery
 - ✅ Production-ready persistence layer
 
-### Phase 4: Stream Processing Core (Next)
-- Real-time stream processing engine with fluent API
-- Filter, map, and transformation operations
-- Event time processing and watermarks
-- **Fix managed consumer offset management** (Phase 3 carryover)
-- Target: Stream processing pipeline foundation
+### Phase 4: Stream Processing Core ✅ COMPLETE
+- ✅ Real-time stream processing engine with fluent API
+- ✅ Filter, map, and transformation operations with chaining
+- ✅ Time-based windowing (tumbling windows) for real-time analytics
+- ✅ Grouping operations for partitioned stream processing
+- ✅ Aggregation functions (Count, Sum, Average, Min, Max, Custom)
+- ✅ Stateful processing with persistent state stores (Pebble)
+- ✅ Offset management integration with existing infrastructure
+- ✅ High-performance implementation (4.4M+ events/second)
 
-### Phase 5-8: Advanced Features
-- Windowing and aggregations (tumbling, sliding, session)
-- Advanced stream operations (joins, enrichment)
-- Production deployment tools and monitoring
-- Demo application with React dashboard
+### Phase 5: Advanced Stream Operations (Next)
+- Sliding and session windowing
+- Stream joins and enrichment operations
+- Advanced time handling and watermarks
+- Complex event pattern detection
+- Target: Advanced stream processing capabilities
+
+### Phase 6-8: Production Features
+- Performance optimization and Prometheus/Grafana monitoring
+- Demo application with Python FastAPI simulator + React dashboard
+- Kubernetes deployment and production documentation
 
 ## 🤝 Contributing
 

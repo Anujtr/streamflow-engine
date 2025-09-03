@@ -14,13 +14,18 @@ A high-performance distributed stream processing system built in Go, designed to
 - **Health Monitoring**: Component-based health checks and graceful shutdown
 - **Rich Client Library**: Easy-to-use Go client with managed consumers and auto-commit
 - **Docker Support**: Containerized deployment with docker-compose
-- **Stream Processing**: Fluent API with filter, map, windowing, and aggregation operations
-- **Windowing Support**: Time-based tumbling windows for real-time analytics
+- **Stream Processing**: Advanced fluent API with comprehensive stream operations
+- **Advanced Windowing**: Tumbling, sliding, and session windows for real-time analytics  
+- **Stream Joins**: Inner, left, right, and outer joins with time windows
+- **Event-time Processing**: Watermarks and late event handling for out-of-order events
+- **Pattern Detection**: Complex event patterns with sequence, threshold, and frequency matching
 - **Stateful Processing**: Persistent state stores (Pebble) for aggregation and windowing
+- **Backpressure Management**: Circuit breakers and adaptive flow control
+- **Stream Enrichment**: External data source integration capabilities
 - **Comprehensive Testing**: 70%+ test coverage with unit and integration tests
 - **Production Ready**: Full persistence, coordination, fault tolerance, and stream processing
 
-## 📋 Phase 4 Status: ✅ COMPLETE
+## 📋 Phase 5 Status: ✅ COMPLETE
 
 **Phase 1 Foundation:**
 - ✅ In-memory message storage with partitions
@@ -62,6 +67,18 @@ A high-performance distributed stream processing system built in Go, designed to
 - ✅ **Comprehensive Testing** - 35+ unit tests covering all stream processing functionality
 - ✅ **Performance Optimization** - 4.4M+ events/second throughput with sub-microsecond latency
 - ✅ **Example Applications** - Complete stream processing examples demonstrating all features
+
+**Phase 5 Advanced Stream Operations:**
+- ✅ **Advanced Windowing** - Sliding windows (overlapping) and session windows (activity-based)
+- ✅ **Stream Joins** - Inner, left, right, and outer joins with configurable time windows
+- ✅ **Event-time Processing** - Watermark generation and late event handling for out-of-order data
+- ✅ **Complex Event Pattern Detection** - Sequence, threshold, and frequency pattern matching
+- ✅ **Stream Enrichment** - External data source integration with caching and error handling
+- ✅ **Backpressure Management** - Circuit breakers, adaptive flow control, and multiple strategies
+- ✅ **Event Deduplication** - Time-based duplicate detection within configurable windows
+- ✅ **Advanced Time Semantics** - Support for both event-time and processing-time semantics
+- ✅ **Comprehensive Testing** - 50+ unit tests and benchmarks covering all Phase 5 functionality
+- ✅ **Production Features** - Monitoring, fault tolerance, and performance optimization
 
 ## 🛠️ Quick Start
 
@@ -111,7 +128,7 @@ docker-compose up --build
 docker-compose --profile monitoring up --build
 ```
 
-## 🌊 Stream Processing API (Phase 4)
+## 🌊 Stream Processing API (Phase 4 & 5)
 
 ### Basic Stream Processing
 
@@ -221,6 +238,209 @@ window := &stream.Window{Start: time.Now(), End: time.Now().Add(time.Hour)}
 err = stateStore.PutWindowState(context.Background(), window, "metrics", []byte("data"))
 ```
 
+### Advanced Windowing (Phase 5)
+
+```go
+// Sliding windows - 5-minute windows sliding every minute
+windowConfig := &stream.WindowConfig{
+    Type:  stream.SlidingWindow,
+    Size:  5 * time.Minute,
+    Slide: 1 * time.Minute,
+}
+
+processor.NewStream("metrics-topic").
+    WindowConfig(windowConfig).
+    Count().
+    ForEach(func(result *stream.AggregateResult) {
+        log.Printf("Sliding Window [%s to %s]: Count=%d",
+            result.Window.Start.Format("15:04:05"),
+            result.Window.End.Format("15:04:05"),
+            result.Count)
+    })
+
+// Session windows - dynamic windows based on activity gaps
+processor.NewStream("user-activity-topic").
+    SessionWindow(30 * time.Minute). // 30-minute session timeout
+    GroupBy(func(event *stream.Event) string {
+        return event.Key // Group by user ID
+    }).
+    Count().
+    ForEach(func(result *stream.AggregateResult) {
+        log.Printf("User Session [%s]: Activity Count=%d",
+            result.Key, result.Count)
+    })
+```
+
+### Stream Joins (Phase 5)
+
+```go
+ordersStream := processor.NewStream("orders-topic")
+paymentsStream := processor.NewStream("payments-topic")
+
+// Join orders with payments within 10-minute window
+joinFunc := func(orderEvent, paymentEvent *stream.Event) *stream.Event {
+    joinedEvent := orderEvent.Clone()
+    joinedEvent.Key = "order-payment-" + orderEvent.Key
+    
+    if joinedEvent.Metadata == nil {
+        joinedEvent.Metadata = make(map[string]interface{})
+    }
+    joinedEvent.Metadata["payment_processed"] = true
+    joinedEvent.Metadata["payment_timestamp"] = paymentEvent.Timestamp
+    
+    return joinedEvent
+}
+
+joinedStream := ordersStream.Join(
+    paymentsStream,
+    joinFunc,
+    10 * time.Minute,
+)
+
+joinedStream.ForEach(func(result *stream.JoinResult) {
+    log.Printf("Joined Order-Payment: OrderKey=%s, PaymentKey=%s",
+        result.LeftEvent.Key, result.RightEvent.Key)
+})
+```
+
+### Complex Event Pattern Detection (Phase 5)
+
+```go
+fraudDetectionStream := processor.NewStream("transactions-topic")
+
+// Detect suspicious pattern: Multiple high-value transactions
+suspiciousPattern := func(events []*stream.Event) bool {
+    if len(events) < 3 {
+        return false
+    }
+    
+    var totalAmount float64
+    userID := ""
+    
+    for i, event := range events {
+        if event.Metadata != nil {
+            if uid, exists := event.Metadata["user_id"]; exists {
+                currentUserID := fmt.Sprintf("%v", uid)
+                if i == 0 {
+                    userID = currentUserID
+                } else if userID != currentUserID {
+                    return false // Different users
+                }
+            }
+            
+            if amount, exists := event.Metadata["amount"]; exists {
+                if amt, ok := amount.(float64); ok {
+                    totalAmount += amt
+                }
+            }
+        }
+    }
+    
+    return totalAmount > 10000.0 // Alert if >$10K total
+}
+
+patternStream := fraudDetectionStream.Detect(suspiciousPattern, 5*time.Minute)
+
+patternStream.ForEach(func(result *stream.PatternResult) {
+    log.Printf("🚨 FRAUD ALERT: Pattern '%s' detected with %d events",
+        result.PatternName, len(result.Events))
+})
+```
+
+### Event-time Processing with Watermarks (Phase 5)
+
+```go
+eventTimeStream := processor.NewStream("timestamped-events-topic").
+    WithEventTime(func(event *stream.Event) time.Time {
+        // Extract event time from payload
+        if event.Metadata != nil {
+            if eventTime, exists := event.Metadata["event_time"]; exists {
+                if t, ok := eventTime.(time.Time); ok {
+                    return t
+                }
+            }
+        }
+        return event.Timestamp // Fallback to processing time
+    }).
+    WithWatermark(func(event *stream.Event) *stream.Watermark {
+        // Generate watermark 10 seconds behind event time
+        eventTime := event.Timestamp
+        if event.Metadata != nil {
+            if et, exists := event.Metadata["event_time"]; exists {
+                if t, ok := et.(time.Time); ok {
+                    eventTime = t
+                }
+            }
+        }
+        
+        return &stream.Watermark{
+            Timestamp: eventTime.Add(-10 * time.Second),
+            Source:    "custom-watermark",
+        }
+    })
+
+eventTimeStream.
+    Window(1 * time.Minute).
+    Count().
+    ForEach(func(result *stream.AggregateResult) {
+        log.Printf("Event-time Window [%s to %s]: Count=%d",
+            result.Window.Start.Format("15:04:05"),
+            result.Window.End.Format("15:04:05"),
+            result.Count)
+    })
+```
+
+### Stream Enrichment (Phase 5)
+
+```go
+// Mock enrichment source (database, cache, etc.)
+enrichmentSource := &MyEnrichmentSource{
+    userData: map[string]string{
+        "user123": `{"name":"John Doe","tier":"premium","location":"US"}`,
+        "user456": `{"name":"Jane Smith","tier":"standard","location":"EU"}`,
+    },
+}
+
+enrichedStream := processor.NewStream("raw-events-topic").
+    Enrich(enrichmentSource, func(event *stream.Event) string {
+        // Extract user ID for enrichment lookup
+        if event.Metadata != nil {
+            if userID, exists := event.Metadata["user_id"]; exists {
+                return fmt.Sprintf("%v", userID)
+            }
+        }
+        return event.Key
+    })
+
+enrichedStream.ForEach(func(event *stream.Event) {
+    if event.Metadata != nil && event.Metadata["enrichment"] != nil {
+        log.Printf("Enriched Event: Key=%s, Enrichment=%v",
+            event.Key, event.Metadata["enrichment"])
+    }
+})
+```
+
+### Backpressure and Flow Control (Phase 5)
+
+```go
+flowControlConfig := &stream.FlowControlConfig{
+    Strategy:              stream.BufferStrategy,
+    BufferSize:            100,
+    MaxThroughput:         500, // 500 events/sec limit
+    CircuitBreakerEnabled: true,
+}
+
+backpressureStream := processor.NewStream("high-volume-topic").
+    WithBackpressure(flowControlConfig).
+    Filter(func(event *stream.Event) bool {
+        return event.Key != "spam"
+    })
+
+backpressureStream.ForEach(func(event *stream.Event) {
+    log.Printf("Processed Event: %s (with flow control)", event.Key)
+})
+```
+
 ## 📊 Performance Benchmarks
 
 Recent Phase 2 benchmark results on MacBook Pro (M1):
@@ -318,6 +538,40 @@ BenchmarkMapOperations-8           30,526,420 ops    39.8 ns/op     0 B/op     0
 - **High-performance state stores**: 15M+ state store operations/second
 - **Zero-allocation filters**: Billion+ operations/second for simple filters
 
+**Phase 5 Advanced Operations Benchmarks** on Apple M1:
+
+```
+Advanced Stream Processing Performance Test:
+BenchmarkSlidingWindowManager-8         4,683,526 ops   253.5 ns/op    80 B/op    2 allocs/op
+BenchmarkSessionWindowManager-8        28,051,227 ops    85.6 ns/op     0 B/op    0 allocs/op
+BenchmarkWatermarkManager-8             3,831,754 ops   311.2 ns/op    56 B/op    2 allocs/op
+BenchmarkPatternDetector-8              4,870,695 ops   263.2 ns/op   256 B/op    3 allocs/op
+BenchmarkFlowController-8               6,205,231 ops   205.7 ns/op     0 B/op    0 allocs/op
+BenchmarkStreamJoiner-8                 1,541,000 ops   745.3 ns/op    88 B/op    3 allocs/op
+BenchmarkStreamEnricher-8               1,988,902 ops   598.1 ns/op   826 B/op   14 allocs/op
+BenchmarkEndToEndAdvancedPipeline-8   13,026,021 ops   256.8 ns/op    24 B/op    1 allocs/op
+
+Pattern Matching Performance:
+BenchmarkSequencePattern-8            131,223,735 ops     9.1 ns/op     0 B/op    0 allocs/op
+BenchmarkThresholdPattern-8              3,008,823 ops   368.4 ns/op   880 B/op   15 allocs/op
+BenchmarkFrequencyPattern-8            364,903,388 ops     3.4 ns/op     0 B/op    0 allocs/op
+
+Memory Efficiency:
+BenchmarkMemoryUsage/SlidingWindows-8   6,235,188 ops   187.0 ns/op    81 B/op    2 allocs/op
+BenchmarkMemoryUsage/SessionWindows-8   7,745,301 ops   152.8 ns/op   136 B/op    2 allocs/op
+BenchmarkMemoryUsage/PatternDetection-8 2,938,243 ops   413.6 ns/op   500 B/op    7 allocs/op
+```
+
+**🚀 Phase 5 Performance Highlights:**
+- **Advanced Windowing**: 28M+ session window operations/second, 4.6M+ sliding window operations/second
+- **Stream Joins**: 1.5M+ join operations/second with buffered event matching
+- **Pattern Detection**: 131M+ sequence pattern matches/second, 4.9M+ complex patterns/second
+- **Watermark Processing**: 3.8M+ watermark updates/second with global coordination
+- **Flow Control**: 6.2M+ backpressure checks/second with circuit breaker logic
+- **Stream Enrichment**: 2M+ enrichment operations/second with external data lookup
+- **Memory Optimized**: Efficient memory usage across all advanced operations
+- **End-to-End Pipeline**: 13M+ events/second through complete advanced processing pipeline
+
 ## 🏗️ Architecture
 
 ```
@@ -366,6 +620,16 @@ BenchmarkMapOperations-8           30,526,420 ops    39.8 ns/op     0 B/op     0
 - **State Stores**: Persistent (Pebble) and memory-based state management
 - **Aggregation Engine**: Built-in aggregators (Count, Sum, Avg, Min, Max) with custom support
 - **Offset Integration**: Seamless integration with managed consumer offset commits
+
+**Phase 5 Advanced Stream Operations:**
+- **Advanced Window Managers**: Sliding windows (overlapping) and session windows (activity-based)
+- **Stream Joiner**: Multi-stream joins (inner, left, right, outer) with time window coordination
+- **Watermark Manager**: Event-time processing with watermark generation and late event handling
+- **Pattern Detector**: Complex event pattern matching with sequence, threshold, and frequency patterns
+- **Flow Controller**: Backpressure management with circuit breakers and adaptive throttling strategies
+- **Stream Enricher**: External data source integration with caching and error handling
+- **Event Deduplication**: Time-based duplicate detection with configurable time windows
+- **Advanced Time Semantics**: Support for both event-time and processing-time with watermark coordination
 
 ## 📖 API Documentation
 
@@ -437,16 +701,18 @@ go test -v ./internal/persistence/
 go test -bench=. ./...
 ```
 
-**Test Coverage (Phase 4):**
+**Test Coverage (Phase 5):**
 - **Stream Processing Core**: 35 comprehensive unit tests covering all functionality
+- **Advanced Stream Operations**: 50+ unit tests covering Phase 5 functionality
 - **Persistence Layer**: 12 comprehensive tests (Pebble + Offset store)
 - **Integration Tests**: 5 end-to-end Phase 3 tests  
 - **Storage Layer**: 16 tests with interface compatibility
 - **Coordination Layer**: 10 tests for consumer groups and leader election
 - **Client Library**: Producer/Consumer integration validated
 - **Performance Tests**: Memory usage and throughput validation
-- **Benchmark Suite**: 17 benchmarks covering all critical paths
-- **Total: 90+ tests** covering all Phase 4 functionality with 70%+ coverage
+- **Benchmark Suite**: 25+ benchmarks covering all critical paths including Phase 5
+- **Advanced Components**: Sliding windows, sessions, joins, patterns, watermarks, backpressure
+- **Total: 140+ tests** covering all Phase 5 functionality with 70%+ coverage
 
 ### Phase 3 Issue Resolution ✅ FIXED
 
@@ -529,12 +795,14 @@ docker-compose --profile monitoring up
 - ✅ Offset management integration with existing infrastructure
 - ✅ High-performance implementation (4.4M+ events/second)
 
-### Phase 5: Advanced Stream Operations (Next)
-- Sliding and session windowing
-- Stream joins and enrichment operations
-- Advanced time handling and watermarks
-- Complex event pattern detection
-- Target: Advanced stream processing capabilities
+### Phase 5: Advanced Stream Operations ✅ COMPLETE
+- ✅ **Sliding and session windowing** - Overlapping windows and activity-based dynamic windows
+- ✅ **Stream joins and enrichment operations** - Multi-stream joins with external data enrichment
+- ✅ **Advanced time handling and watermarks** - Event-time processing with late event handling
+- ✅ **Complex event pattern detection** - Sequence, threshold, and frequency pattern matching
+- ✅ **Backpressure and flow control** - Circuit breakers and adaptive throttling strategies
+- ✅ **Advanced time semantics** - Event-time vs processing-time with watermark coordination
+- ✅ **Production features** - Monitoring, fault tolerance, and comprehensive testing
 
 ### Phase 6-8: Production Features
 - Performance optimization and Prometheus/Grafana monitoring

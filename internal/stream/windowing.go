@@ -162,7 +162,7 @@ func (wm *windowManagerImpl) windowExpirationLoop(ctx context.Context) {
 // windowedStreamImpl implements the WindowedStream interface
 type windowedStreamImpl struct {
 	baseStream    *streamImpl
-	windowManager *windowManagerImpl
+	windowManager WindowManager
 	windowSize    time.Duration
 	metrics       *ProcessorMetrics
 	mu            sync.RWMutex
@@ -324,4 +324,77 @@ func (ws *windowedStreamImpl) GetMetrics() *ProcessorMetrics {
 		AvgLatency:        ws.metrics.AvgLatency,
 		ThroughputPerSec:  ws.metrics.ThroughputPerSec,
 	}
+}
+
+// Phase 5 Advanced Window Constructors
+
+// NewSlidingWindowedStream creates a sliding windowed stream
+func NewSlidingWindowedStream(baseStream *streamImpl, windowSize, slideSize time.Duration) WindowedStream {
+	slidingWindowManager := NewSlidingWindowManager(windowSize, slideSize)
+	
+	return &windowedStreamImpl{
+		baseStream:    baseStream,
+		windowSize:    windowSize,
+		windowManager: slidingWindowManager,
+		metrics:       &ProcessorMetrics{},
+	}
+}
+
+// NewSessionWindowedStream creates a session windowed stream
+func NewSessionWindowedStream(baseStream *streamImpl, sessionTimeout time.Duration) WindowedStream {
+	sessionWindowManager := NewSessionWindowManager(sessionTimeout, func(e *Event) string {
+		return e.Key // Default session key extractor
+	})
+	
+	// Adapt session window manager to WindowManager interface
+	adaptedManager := &sessionWindowAdapter{
+		sessionManager: sessionWindowManager,
+		sessionTimeout: sessionTimeout,
+	}
+	
+	return &windowedStreamImpl{
+		baseStream:    baseStream,
+		windowSize:    sessionTimeout,
+		windowManager: adaptedManager,
+		metrics:       &ProcessorMetrics{},
+	}
+}
+
+// sessionWindowAdapter adapts sessionWindowManager to WindowManager interface
+type sessionWindowAdapter struct {
+	sessionManager *sessionWindowManager
+	sessionTimeout time.Duration
+}
+
+func (swa *sessionWindowAdapter) GetWindow(timestamp time.Time) *Window {
+	// For session windows, we need an event to determine the session
+	// This is a simplified implementation
+	return &Window{
+		Start: timestamp,
+		End:   timestamp.Add(swa.sessionTimeout),
+	}
+}
+
+func (swa *sessionWindowAdapter) GetActiveWindows() []*Window {
+	return swa.sessionManager.GetActiveWindows()
+}
+
+func (swa *sessionWindowAdapter) ExpireWindows(cutoffTime time.Time) ([]*Window, error) {
+	return swa.sessionManager.ExpireWindows(cutoffTime)
+}
+
+func (swa *sessionWindowAdapter) GetWindowSize() time.Duration {
+	return swa.sessionTimeout
+}
+
+func (swa *sessionWindowAdapter) GetWindowSlide() time.Duration {
+	return swa.sessionTimeout
+}
+
+func (swa *sessionWindowAdapter) Start(ctx context.Context) error {
+	return swa.sessionManager.Start(ctx)
+}
+
+func (swa *sessionWindowAdapter) Stop() error {
+	return swa.sessionManager.Stop()
 }

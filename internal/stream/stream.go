@@ -76,10 +76,27 @@ func (s *streamImpl) Window(duration time.Duration) WindowedStream {
 	return NewWindowedStream(s, duration)
 }
 
+// WindowConfig creates a windowed stream with the specified configuration
+func (s *streamImpl) WindowConfig(config *WindowConfig) WindowedStream {
+	switch config.Type {
+	case SlidingWindow:
+		return NewSlidingWindowedStream(s, config.Size, config.Slide)
+	case SessionWindow:
+		return NewSessionWindowedStream(s, config.SessionTimeout)
+	default:
+		// Default to tumbling window
+		return NewWindowedStream(s, config.Size)
+	}
+}
+
 // SessionWindow creates a session windowed stream with the specified timeout
 func (s *streamImpl) SessionWindow(timeout time.Duration) WindowedStream {
-	// For now, implement as tumbling window - session windows can be enhanced later
-	return NewWindowedStream(s, timeout)
+	return NewSessionWindowedStream(s, timeout)
+}
+
+// SlidingWindow creates a sliding windowed stream
+func (s *streamImpl) SlidingWindow(size, slide time.Duration) WindowedStream {
+	return NewSlidingWindowedStream(s, size, slide)
 }
 
 // GroupBy creates a grouped stream
@@ -150,6 +167,131 @@ func (s *streamImpl) GetMetrics() *ProcessorMetrics {
 		AvgLatency:        s.metrics.AvgLatency,
 		ThroughputPerSec:  s.metrics.ThroughputPerSec,
 	}
+}
+
+// Phase 5 Advanced Methods
+
+// Join creates a joined stream with another stream
+func (s *streamImpl) Join(otherStream Stream, joinFunc JoinFunc, windowSize time.Duration) JoinedStream {
+	config := &JoinConfig{
+		Type:          InnerJoin,
+		WindowSize:    windowSize,
+		JoinFunc:      joinFunc,
+		LeftKeyFunc:   KeyByValue,
+		RightKeyFunc:  KeyByValue,
+		MaxBufferSize: 10000,
+	}
+	return NewJoinedStream(s, otherStream, config, s.processor)
+}
+
+// LeftJoin creates a left joined stream with another stream
+func (s *streamImpl) LeftJoin(otherStream Stream, joinFunc JoinFunc, windowSize time.Duration) JoinedStream {
+	config := &JoinConfig{
+		Type:          LeftJoin,
+		WindowSize:    windowSize,
+		JoinFunc:      joinFunc,
+		LeftKeyFunc:   KeyByValue,
+		RightKeyFunc:  KeyByValue,
+		MaxBufferSize: 10000,
+	}
+	return NewJoinedStream(s, otherStream, config, s.processor)
+}
+
+// Enrich enriches events with data from an external source
+func (s *streamImpl) Enrich(enrichmentSource EnrichmentSource, keyExtractor KeyExtractorFunc) Stream {
+	enricher := NewStreamEnricher(enrichmentSource, keyExtractor)
+	
+	return s.Map(func(event *Event) *Event {
+		enrichedEvent, err := enricher.Enrich(event)
+		if err != nil {
+			log.Printf("[Stream] Enrichment failed for event %s: %v", event.Key, err)
+			return event // Return original event on error
+		}
+		return enrichedEvent
+	})
+}
+
+// WithEventTime configures the stream to use event time
+func (s *streamImpl) WithEventTime(timeExtractor TimeExtractorFunc) Stream {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	
+	s.operations = append(s.operations, Operation{
+		Type:   "event_time",
+		Config: timeExtractor,
+	})
+	
+	return s
+}
+
+// WithWatermark configures watermark generation
+func (s *streamImpl) WithWatermark(watermarkGenerator func(*Event) *Watermark) Stream {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	
+	s.operations = append(s.operations, Operation{
+		Type:   "watermark",
+		Config: watermarkGenerator,
+	})
+	
+	return s
+}
+
+// Detect creates a pattern detection stream
+func (s *streamImpl) Detect(patternMatcher PatternMatcherFunc, withinTime time.Duration) PatternStream {
+	detector := NewPatternDetector()
+	detector.AddPattern("default", patternMatcher, withinTime)
+	
+	return NewPatternStream(s, detector, s.processor)
+}
+
+// WithBackpressure configures flow control
+func (s *streamImpl) WithBackpressure(config *FlowControlConfig) Stream {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	
+	s.operations = append(s.operations, Operation{
+		Type:   "backpressure",
+		Config: config,
+	})
+	
+	return s
+}
+
+// Deduplicate removes duplicate events within a time window
+func (s *streamImpl) Deduplicate(keyExtractor KeyExtractorFunc, withinTime time.Duration) Stream {
+	// For simplicity, implement as a filter that tracks seen keys
+	seenKeys := make(map[string]time.Time)
+	var mu sync.Mutex
+	
+	return s.Filter(func(event *Event) bool {
+		mu.Lock()
+		defer mu.Unlock()
+		
+		key := keyExtractor(event)
+		now := time.Now()
+		
+		// Check if we've seen this key recently
+		if lastSeen, exists := seenKeys[key]; exists {
+			if now.Sub(lastSeen) < withinTime {
+				return false // Duplicate, filter out
+			}
+		}
+		
+		// Update last seen time
+		seenKeys[key] = now
+		
+		// Clean up old entries periodically
+		if len(seenKeys) > 10000 { // Arbitrary limit
+			for k, t := range seenKeys {
+				if now.Sub(t) > withinTime {
+					delete(seenKeys, k)
+				}
+			}
+		}
+		
+		return true
+	})
 }
 
 // applyOperations applies all operations to an event in sequence

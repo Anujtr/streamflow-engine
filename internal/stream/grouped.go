@@ -159,7 +159,7 @@ func (gs *groupedStreamImpl) GetMetrics() *ProcessorMetrics {
 // windowedGroupedStreamImpl implements the WindowedGroupedStream interface
 type windowedGroupedStreamImpl struct {
 	groupedStream *groupedStreamImpl
-	windowManager *windowManagerImpl
+	windowManager WindowManager
 	windowSize    time.Duration
 	groupWindows  map[string]map[string][]*Event // groupKey -> windowKey -> events
 	metrics       *ProcessorMetrics

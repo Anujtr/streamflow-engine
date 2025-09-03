@@ -13,10 +13,30 @@ type Stream interface {
 	
 	// Windowing operations
 	Window(duration time.Duration) WindowedStream
+	WindowConfig(config *WindowConfig) WindowedStream
 	SessionWindow(timeout time.Duration) WindowedStream
+	SlidingWindow(size, slide time.Duration) WindowedStream
 	
 	// Grouping operations
 	GroupBy(KeyExtractorFunc) GroupedStream
+	
+	// Join operations
+	Join(otherStream Stream, joinFunc JoinFunc, windowSize time.Duration) JoinedStream
+	LeftJoin(otherStream Stream, joinFunc JoinFunc, windowSize time.Duration) JoinedStream
+	Enrich(enrichmentSource EnrichmentSource, keyExtractor KeyExtractorFunc) Stream
+	
+	// Event time and watermarks
+	WithEventTime(timeExtractor TimeExtractorFunc) Stream
+	WithWatermark(watermarkGenerator func(*Event) *Watermark) Stream
+	
+	// Pattern detection
+	Detect(patternMatcher PatternMatcherFunc, withinTime time.Duration) PatternStream
+	
+	// Flow control
+	WithBackpressure(config *FlowControlConfig) Stream
+	
+	// Deduplication
+	Deduplicate(keyExtractor KeyExtractorFunc, withinTime time.Duration) Stream
 	
 	// Terminal operations
 	ForEach(func(*Event)) error
@@ -177,6 +197,107 @@ type WindowManager interface {
 	Stop() error
 }
 
+// JoinedStream represents a stream resulting from joining two streams
+type JoinedStream interface {
+	// Transformation operations on joined results
+	Filter(func(*JoinResult) bool) JoinedStream
+	Map(func(*JoinResult) *Event) Stream
+	
+	// Windowing operations
+	Window(duration time.Duration) WindowedStream
+	
+	// Terminal operations
+	ForEach(func(*JoinResult)) error
+	Output(topic string) error
+	
+	// Control operations
+	Start(ctx context.Context) error
+	Stop() error
+	
+	// Metrics and monitoring
+	GetMetrics() *ProcessorMetrics
+}
+
+// PatternStream represents a stream for pattern detection results
+type PatternStream interface {
+	// Transformation operations on pattern results
+	Filter(func(*PatternResult) bool) PatternStream
+	Map(func(*PatternResult) *Event) Stream
+	
+	// Terminal operations
+	ForEach(func(*PatternResult)) error
+	Output(topic string) error
+	Alert(alertTopic string) error
+	
+	// Control operations
+	Start(ctx context.Context) error
+	Stop() error
+	
+	// Metrics and monitoring
+	GetMetrics() *ProcessorMetrics
+}
+
+// WatermarkManager manages watermarks for event-time processing
+type WatermarkManager interface {
+	// Watermark operations
+	UpdateWatermark(source string, timestamp time.Time)
+	GetWatermark(source string) *Watermark
+	GetGlobalWatermark() *Watermark
+	
+	// Late event handling
+	IsLateEvent(event *Event, allowedLateness time.Duration) bool
+	HandleLateEvent(event *Event) error
+	
+	// Lifecycle
+	Start(ctx context.Context) error
+	Stop() error
+}
+
+// PatternDetector handles complex event pattern detection
+type PatternDetector interface {
+	// Pattern operations
+	AddPattern(name string, matcher PatternMatcherFunc, withinTime time.Duration) error
+	RemovePattern(name string) error
+	
+	// Event processing
+	ProcessEvent(event *Event) ([]*PatternResult, error)
+	
+	// State management
+	GetPatternState(patternName string) (map[string]interface{}, error)
+	ClearPatternState(patternName string) error
+	
+	// Lifecycle
+	Start(ctx context.Context) error
+	Stop() error
+}
+
+// FlowController manages backpressure and flow control
+type FlowController interface {
+	// Flow control operations
+	CanProcess() bool
+	OnEventProcessed()
+	OnEventDropped()
+	OnEventBuffered()
+	
+	// Backpressure management
+	ApplyBackpressure(event *Event) error
+	GetCurrentThroughput() float64
+	GetBufferUtilization() float64
+	
+	// Circuit breaker
+	IsCircuitOpen() bool
+	RecordSuccess()
+	RecordFailure()
+	
+	// Configuration
+	UpdateConfig(config *FlowControlConfig) error
+	GetConfig() *FlowControlConfig
+	
+	// Lifecycle
+	Start(ctx context.Context) error
+	Stop() error
+}
+
 // ProcessorConfig holds configuration for stream processing
 type ProcessorConfig struct {
 	ProcessorName    string        `json:"processor_name"`
@@ -198,8 +319,22 @@ type ProcessorConfig struct {
 	StateStorePath   string        `json:"state_store_path,omitempty"`
 	StateStoreType   string        `json:"state_store_type"` // "pebble", "memory"
 	
+	// Event time settings
+	EventTimeExtractor TimeExtractorFunc `json:"-"`
+	WatermarkConfig    *WatermarkConfig  `json:"watermark_config,omitempty"`
+	
+	// Flow control settings
+	FlowControlConfig *FlowControlConfig `json:"flow_control_config,omitempty"`
+	
 	// Error handling
 	ErrorTopic       string        `json:"error_topic,omitempty"`
 	RetryAttempts    int           `json:"retry_attempts"`
 	RetryBackoff     time.Duration `json:"retry_backoff"`
+}
+
+// WatermarkConfig holds configuration for watermark generation
+type WatermarkConfig struct {
+	MaxOutOfOrderness time.Duration `json:"max_out_of_orderness"`
+	IdleSourceTimeout time.Duration `json:"idle_source_timeout"`
+	WatermarkInterval time.Duration `json:"watermark_interval"`
 }

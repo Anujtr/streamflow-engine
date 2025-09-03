@@ -130,3 +130,78 @@ type ValueExtractorFunc func(*Event) (float64, error)
 
 // AggregatorFunc defines a function type for custom aggregations
 type AggregatorFunc func([]*Event) *AggregateResult
+
+// TimeExtractorFunc defines a function type for extracting event time from events
+type TimeExtractorFunc func(*Event) time.Time
+
+// JoinFunc defines a function type for joining events from two streams
+type JoinFunc func(*Event, *Event) *Event
+
+// PatternMatcherFunc defines a function type for pattern detection
+type PatternMatcherFunc func([]*Event) bool
+
+// WindowType represents different types of windows
+type WindowType string
+
+const (
+	TumblingWindow WindowType = "tumbling"
+	SlidingWindow  WindowType = "sliding"
+	SessionWindow  WindowType = "session"
+)
+
+// WindowConfig holds configuration for different window types
+type WindowConfig struct {
+	Type            WindowType    `json:"type"`
+	Size            time.Duration `json:"size"`
+	Slide           time.Duration `json:"slide,omitempty"`           // For sliding windows
+	SessionTimeout  time.Duration `json:"session_timeout,omitempty"` // For session windows
+	AllowedLateness time.Duration `json:"allowed_lateness,omitempty"`
+}
+
+// Watermark represents event-time progress tracking
+type Watermark struct {
+	Timestamp time.Time `json:"timestamp"`
+	Source    string    `json:"source"`
+}
+
+// JoinResult represents the result of joining two events
+type JoinResult struct {
+	LeftEvent  *Event    `json:"left_event"`
+	RightEvent *Event    `json:"right_event"`
+	JoinKey    string    `json:"join_key"`
+	Window     *Window   `json:"window,omitempty"`
+	Timestamp  time.Time `json:"timestamp"`
+}
+
+// PatternResult represents a detected event pattern
+type PatternResult struct {
+	PatternName string    `json:"pattern_name"`
+	Events      []*Event  `json:"events"`
+	StartTime   time.Time `json:"start_time"`
+	EndTime     time.Time `json:"end_time"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"`
+}
+
+// BackpressureStrategy defines how to handle backpressure
+type BackpressureStrategy string
+
+const (
+	BlockStrategy  BackpressureStrategy = "block"
+	DropStrategy   BackpressureStrategy = "drop"
+	BufferStrategy BackpressureStrategy = "buffer"
+)
+
+// FlowControlConfig holds configuration for flow control
+type FlowControlConfig struct {
+	Strategy          BackpressureStrategy `json:"strategy"`
+	BufferSize        int                  `json:"buffer_size,omitempty"`
+	BlockTimeout      time.Duration        `json:"block_timeout,omitempty"`
+	MaxThroughput     float64             `json:"max_throughput,omitempty"` // events/sec
+	CircuitBreakerEnabled bool            `json:"circuit_breaker_enabled"`
+}
+
+// EnrichmentSource represents a source for stream enrichment
+type EnrichmentSource interface {
+	Lookup(key string) ([]byte, error)
+	Close() error
+}

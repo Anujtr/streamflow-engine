@@ -115,8 +115,12 @@ func (s *Server) Consume(req *pb.ConsumeRequest, stream pb.MessageService_Consum
 		default:
 		}
 
+		startTime := time.Now()
 		messages, hasMore, err := s.storage.Consume(req.Topic, req.Partition, req.Offset, req.MaxMessages)
 		if err != nil {
+			if s.perfMetrics != nil {
+				s.perfMetrics.IncrementConsumeErrors()
+			}
 			return stream.Send(&pb.ConsumeResponse{
 				Error: err.Error(),
 			})
@@ -134,10 +138,16 @@ func (s *Server) Consume(req *pb.ConsumeRequest, stream pb.MessageService_Consum
 			}
 
 			if err := stream.Send(response); err != nil {
+				if s.perfMetrics != nil {
+					s.perfMetrics.IncrementConsumeErrors()
+				}
 				return err
 			}
 
 			atomic.AddInt64(&s.messagesConsumed, int64(len(messages)))
+			if s.perfMetrics != nil {
+				s.perfMetrics.RecordConsumeLatency(time.Since(startTime), len(messages))
+			}
 			req.Offset += int64(len(messages))
 		}
 

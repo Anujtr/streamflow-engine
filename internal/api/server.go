@@ -8,6 +8,7 @@ import (
 	"time"
 
 	pb "github.com/Anujtr/streamflow-engine/api/proto"
+	"github.com/Anujtr/streamflow-engine/internal/metrics"
 	"github.com/Anujtr/streamflow-engine/internal/storage"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -16,26 +17,36 @@ type Server struct {
 	pb.UnimplementedMessageServiceServer
 	storage     *storage.Storage
 	version     string
+	perfMetrics *metrics.PerformanceMetrics
 	
-	// Metrics
+	// Legacy metrics for backward compatibility
 	messagesProduced int64
 	messagesConsumed int64
 	activeConsumers  int64
 }
 
-func NewServer(storage *storage.Storage, version string) *Server {
+func NewServer(storage *storage.Storage, version string, perfMetrics *metrics.PerformanceMetrics) *Server {
 	return &Server{
-		storage: storage,
-		version: version,
+		storage:     storage,
+		version:     version,
+		perfMetrics: perfMetrics,
 	}
 }
 
 func (s *Server) Produce(ctx context.Context, req *pb.ProduceRequest) (*pb.ProduceResponse, error) {
+	startTime := time.Now()
+	
 	if req.Topic == "" {
+		if s.perfMetrics != nil {
+			s.perfMetrics.IncrementProduceErrors()
+		}
 		return nil, fmt.Errorf("topic name is required")
 	}
 
 	if len(req.Messages) == 0 {
+		if s.perfMetrics != nil {
+			s.perfMetrics.IncrementProduceErrors()
+		}
 		return nil, fmt.Errorf("at least one message is required")
 	}
 
@@ -62,8 +73,14 @@ func (s *Server) Produce(ctx context.Context, req *pb.ProduceRequest) (*pb.Produ
 		if err != nil {
 			result.Error = err.Error()
 			log.Printf("Failed to produce message %d: %v", i, err)
+			if s.perfMetrics != nil {
+				s.perfMetrics.IncrementProduceErrors()
+			}
 		} else {
 			atomic.AddInt64(&s.messagesProduced, 1)
+			if s.perfMetrics != nil {
+				s.perfMetrics.RecordProduceLatency(time.Since(startTime))
+			}
 		}
 		
 		results[i] = result
@@ -76,6 +93,9 @@ func (s *Server) Produce(ctx context.Context, req *pb.ProduceRequest) (*pb.Produ
 
 func (s *Server) Consume(req *pb.ConsumeRequest, stream pb.MessageService_ConsumeServer) error {
 	if req.Topic == "" {
+		if s.perfMetrics != nil {
+			s.perfMetrics.IncrementConsumeErrors()
+		}
 		return fmt.Errorf("topic name is required")
 	}
 

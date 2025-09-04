@@ -6,8 +6,11 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 	"time"
 
@@ -15,6 +18,8 @@ import (
 	"github.com/Anujtr/streamflow-engine/internal/api"
 	"github.com/Anujtr/streamflow-engine/internal/coordination"
 	"github.com/Anujtr/streamflow-engine/internal/health"
+	"github.com/Anujtr/streamflow-engine/internal/metrics"
+	"github.com/Anujtr/streamflow-engine/internal/monitoring"
 	"github.com/Anujtr/streamflow-engine/internal/partitioning"
 	"github.com/Anujtr/streamflow-engine/internal/storage"
 	"google.golang.org/grpc"
@@ -26,6 +31,7 @@ const Version = "3.0.0-phase3"
 func main() {
 	var (
 		port        = flag.String("port", "8080", "Port to listen on")
+		httpPort    = flag.String("http-port", "8081", "HTTP port for metrics and health endpoints")
 		host        = flag.String("host", "localhost", "Host to bind to")
 		dataDir     = flag.String("data-dir", "./data", "Data directory for persistent storage")
 		persistent  = flag.Bool("persistent", true, "Enable persistent storage with Pebble")
@@ -65,6 +71,12 @@ func main() {
 	healthMonitor.RegisterStorage(store)
 	healthMonitor.Start()
 
+	// Create performance metrics
+	perfMetrics := metrics.NewPerformanceMetrics()
+
+	// Create Prometheus metrics exporter
+	promMetrics := monitoring.NewPrometheusMetrics(perfMetrics, store)
+
 	// Create partition manager with optional leader election
 	var partitionManager *partitioning.PartitionManager
 	var etcdClient *coordination.EtcdClient
@@ -98,7 +110,7 @@ func main() {
 	consumerCoordinator := coordination.NewConsumerGroupCoordinator()
 
 	// Create servers
-	messageServer := api.NewServer(store, Version)
+	messageServer := api.NewServer(store, Version, perfMetrics)
 	partitionServer := api.NewPartitionServer(partitionManager)
 	consumerGroupServer := api.NewConsumerGroupServer(consumerCoordinator)
 
@@ -111,16 +123,65 @@ func main() {
 	// Enable reflection for easier debugging
 	reflection.Register(grpcServer)
 
-	// Listen on the specified address
+	// Setup HTTP server for metrics and health endpoints
+	httpMux := http.NewServeMux()
+	httpMux.Handle("/metrics", promMetrics.GetHandler())
+	httpMux.HandleFunc("/health", promMetrics.GetHealthHandler(Version))
+	httpMux.HandleFunc("/debug/pprof/", http.DefaultServeMux.ServeHTTP) // pprof endpoints
+	
+	httpServer := &http.Server{
+		Addr:    fmt.Sprintf("%s:%s", *host, *httpPort),
+		Handler: httpMux,
+	}
+
+	// Start metrics update routine
+	var metricsWg sync.WaitGroup
+	metricsStopChan := make(chan struct{})
+	
+	metricsWg.Add(1)
+	go func() {
+		defer metricsWg.Done()
+		ticker := time.NewTicker(5 * time.Second) // Update every 5 seconds
+		defer ticker.Stop()
+		
+		for {
+			select {
+			case <-ticker.C:
+				promMetrics.UpdateMetrics()
+				// Update component health
+				health := healthMonitor.GetHealth()
+				if health != nil {
+					for componentName, component := range health.Components {
+						promMetrics.UpdateComponentHealth(componentName, component.Status == "healthy")
+					}
+				}
+			case <-metricsStopChan:
+				return
+			}
+		}
+	}()
+
+	// Listen on the specified address for gRPC
 	address := fmt.Sprintf("%s:%s", *host, *port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		log.Fatalf("Failed to listen on %s: %v", address, err)
 	}
 
-	log.Printf("StreamFlow Engine v%s starting on %s", Version, address)
+	log.Printf("StreamFlow Engine v%s starting on %s (gRPC)", Version, address)
+	log.Printf("HTTP metrics server starting on %s:%s", *host, *httpPort)
+	log.Printf("Metrics endpoint: http://%s:%s/metrics", *host, *httpPort)
+	log.Printf("Health endpoint: http://%s:%s/health", *host, *httpPort)
+	log.Printf("pprof endpoints: http://%s:%s/debug/pprof/", *host, *httpPort)
 
-	// Start server in a goroutine
+	// Start HTTP server in a goroutine
+	go func() {
+		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Printf("HTTP server error: %v", err)
+		}
+	}()
+
+	// Start gRPC server in a goroutine
 	go func() {
 		if err := grpcServer.Serve(listener); err != nil {
 			log.Printf("Failed to serve: %v", err)
@@ -139,6 +200,15 @@ func main() {
 	defer shutdownCancel()
 
 	// Graceful shutdown sequence
+	log.Println("Stopping metrics update routine...")
+	close(metricsStopChan)
+	metricsWg.Wait()
+
+	log.Println("Stopping HTTP server...")
+	if err := httpServer.Shutdown(shutdownCtx); err != nil {
+		log.Printf("HTTP server shutdown error: %v", err)
+	}
+
 	log.Println("Stopping health monitor...")
 	healthMonitor.Stop()
 

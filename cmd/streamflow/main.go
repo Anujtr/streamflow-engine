@@ -26,7 +26,7 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-const Version = "3.0.0-phase3"
+const Version = "6.0.0-phase6"
 
 func main() {
 	var (

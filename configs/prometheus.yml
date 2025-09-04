@@ -5,7 +5,7 @@ global:
 scrape_configs:
   - job_name: 'streamflow'
     static_configs:
-      - targets: ['streamflow:8080']
+      - targets: ['streamflow:8081']
     scrape_interval: 5s
     metrics_path: '/metrics'
     

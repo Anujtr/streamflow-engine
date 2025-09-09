@@ -1,0 +1,171 @@
+version: '3.8'
+
+services:
+  # StreamFlow Engine Core
+  streamflow:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+      - "9090:9090"  # gRPC
+    environment:
+      - STREAMFLOW_PORT=8080
+      - STREAMFLOW_GRPC_PORT=9090
+      - STREAMFLOW_DATA_DIR=/data
+      - ETCD_ENDPOINTS=http://etcd:2379
+    volumes:
+      - streamflow_data:/data
+    depends_on:
+      - etcd
+    networks:
+      - streamflow-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # etcd for coordination
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.9
+    ports:
+      - "2379:2379"
+      - "2380:2380"
+    environment:
+      - ETCD_NAME=etcd0
+      - ETCD_DATA_DIR=/etcd-data
+      - ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379
+      - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
+      - ETCD_LISTEN_PEER_URLS=http://0.0.0.0:2380
+      - ETCD_INITIAL_ADVERTISE_PEER_URLS=http://etcd:2380
+      - ETCD_INITIAL_CLUSTER=etcd0=http://etcd:2380
+      - ETCD_INITIAL_CLUSTER_TOKEN=streamflow-cluster
+      - ETCD_INITIAL_CLUSTER_STATE=new
+      - ETCD_AUTO_COMPACTION_RETENTION=1
+    volumes:
+      - etcd_data:/etcd-data
+    networks:
+      - streamflow-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Event Simulator (Python FastAPI)
+  simulator:
+    build:
+      context: ./simulator
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - STREAMFLOW_HOST=streamflow
+      - STREAMFLOW_PORT=9090
+    depends_on:
+      - streamflow
+    networks:
+      - streamflow-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Stream Processing Pipelines (Go)
+  pipelines:
+    build:
+      context: ..
+      dockerfile: demo/pipelines/Dockerfile
+    ports:
+      - "8081:8080"  # WebSocket server for dashboard (avoid conflict with StreamFlow)
+    environment:
+      - STREAMFLOW_HOST=streamflow
+      - STREAMFLOW_PORT=9090
+      - PIPELINE_PORT=8080
+    depends_on:
+      - streamflow
+    networks:
+      - streamflow-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # React Dashboard
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_SIMULATOR_URL=http://localhost:8000
+      - REACT_APP_PIPELINES_URL=http://localhost:8081
+    depends_on:
+      - simulator
+      - pipelines
+    networks:
+      - streamflow-net
+    restart: unless-stopped
+
+  # Prometheus for metrics
+  prometheus:
+    image: prom/prometheus:v2.45.0
+    ports:
+      - "9091:9090"  # Avoid conflict with StreamFlow gRPC port
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=7d'
+      - '--web.enable-lifecycle'
+    networks:
+      - streamflow-net
+    restart: unless-stopped
+
+  # Grafana for dashboards
+  grafana:
+    image: grafana/grafana:10.0.3
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=streamflow123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - ./monitoring/grafana-dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+      - ./monitoring/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+    networks:
+      - streamflow-net
+    restart: unless-stopped
+
+volumes:
+  streamflow_data:
+    driver: local
+  etcd_data:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  streamflow-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

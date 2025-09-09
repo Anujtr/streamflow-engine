@@ -1,0 +1,47 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  # - "first_rules.yml"
+  # - "second_rules.yml"
+
+scrape_configs:
+  # StreamFlow Engine metrics
+  - job_name: 'streamflow'
+    static_configs:
+      - targets: ['streamflow:8080']
+    metrics_path: /metrics
+    scrape_interval: 10s
+
+  # Simulator metrics
+  - job_name: 'simulator'
+    static_configs:
+      - targets: ['simulator:8000']
+    metrics_path: /metrics
+    scrape_interval: 15s
+
+  # Pipeline metrics
+  - job_name: 'pipelines'
+    static_configs:
+      - targets: ['pipelines:8080']
+    metrics_path: /metrics
+    scrape_interval: 10s
+
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # etcd metrics
+  - job_name: 'etcd'
+    static_configs:
+      - targets: ['etcd:2379']
+    metrics_path: /metrics
+    scrape_interval: 30s
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093

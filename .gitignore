@@ -33,3 +33,28 @@ go.work.sum
 implementation-plan.md
 CLAUDE.md
 PHASE3_ISSUES.md
+
+venv/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# VS Code settings (optional)
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# Logs
+*.log
+
+# Pytest cache
+.pytest_cache/

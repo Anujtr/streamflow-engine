@@ -4,6 +4,8 @@ go 1.24.0
 
 require (
 	github.com/cockroachdb/pebble v1.1.5
+	github.com/gorilla/websocket v1.5.3
+	github.com/prometheus/client_golang v1.20.5
 	go.etcd.io/etcd/client/v3 v3.6.4
 	google.golang.org/grpc v1.75.0
 	google.golang.org/protobuf v1.36.8
@@ -30,7 +32,6 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/prometheus/client_golang v1.20.5 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.62.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect

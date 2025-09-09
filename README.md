@@ -25,7 +25,7 @@ A high-performance distributed stream processing system built in Go, designed to
 - **Comprehensive Testing**: 70%+ test coverage with unit and integration tests
 - **Production Ready**: Full persistence, coordination, fault tolerance, and stream processing
 
-## 📋 Phase 6 Status: ✅ COMPLETE
+## 📋 Phase 7 Status: ✅ COMPLETE
 
 **Phase 1 Foundation:**
 - ✅ In-memory message storage with partitions
@@ -89,6 +89,36 @@ A high-performance distributed stream processing system built in Go, designed to
 - ✅ **Health Monitoring** - Component-based health checks exposed via `/health` endpoint
 - ✅ **Production Monitoring** - Real-time metrics update every 5 seconds with <50ms P99 latency maintained
 - ✅ **Performance Benchmarking** - Profiling tools for hot path optimization and performance analysis
+
+**Phase 7 Demo Application Development:**
+- ✅ **Event Simulator** - Python FastAPI application generating realistic e-commerce events with traffic patterns
+- ✅ **Stream Processing Pipelines** - Go-based analytics pipelines for sales metrics and real-time fraud detection
+- ✅ **React Dashboard** - Real-time web dashboard with live visualizations, charts, and fraud alerts
+- ✅ **Docker Orchestration** - Complete docker-compose setup with all services, monitoring, and networking
+- ✅ **Demo Scenarios** - Comprehensive scenarios (normal, flash sale, fraud attack, peak hours) with documentation
+- ✅ **Production-Ready Demo** - WebSocket real-time updates, pattern-based fraud detection, and comprehensive monitoring
+
+## 🎭 Demo Application
+
+StreamFlow includes a complete demo application showcasing real-world e-commerce stream processing:
+
+```bash
+# Run the complete demo
+cd demo
+./start-demo.sh
+
+# Access the demo services:
+# - React Dashboard: http://localhost:3000
+# - Event Simulator: http://localhost:8000
+# - Grafana: http://localhost:3001 (admin/streamflow123)
+# - Prometheus: http://localhost:9091
+
+# Generate demo traffic patterns
+curl -X POST http://localhost:8000/start-pattern/flash_sale
+curl -X POST http://localhost:8000/start-pattern/fraud_attack
+```
+
+See `demo/README.md` and `demo/SCENARIOS.md` for detailed documentation and demonstration scenarios.
 
 ## 🛠️ Quick Start
 

@@ -18,15 +18,93 @@ StreamFlow Engine is a distributed stream processing system built for developers
 
 ## 🎯 Try the Demo
 
-See StreamFlow in action with a complete e-commerce analytics system:
+See StreamFlow in action with a complete e-commerce analytics system featuring real-time fraud detection, live dashboards, and comprehensive monitoring.
 
+### **Prerequisites**
+- **Docker & Docker Compose** (required)
+- **4GB RAM, 2 CPU cores** (minimum)
+
+### **Quick Start**
 ```bash
+# Clone and navigate
 git clone https://github.com/Anujtr/streamflow-engine
 cd streamflow-engine/demo
+
+# Start the demo (takes 2-3 minutes first time)
 ./start-demo.sh
 ```
 
-Open http://localhost:3000 to see real-time sales analytics, fraud detection, and event processing in action.
+### **Demo Interfaces**
+Once running, access these live interfaces:
+
+| Service | URL | Description |
+|---------|-----|-------------|
+| **🎛️ Main Dashboard** | http://localhost:3000 | Real-time analytics & fraud detection |
+| **🎮 Traffic Control** | http://localhost:8000 | Event simulation controls |
+| **📊 Monitoring** | http://localhost:3001 | Grafana dashboards (admin/streamflow123) |
+| **📈 Metrics** | http://localhost:9091 | Prometheus metrics |
+
+### **Run Traffic Patterns**
+```bash
+# Normal e-commerce traffic (great for first demo)
+curl -X POST http://localhost:8000/start-pattern/normal
+
+# High-intensity flash sale (500+ events/sec)
+curl -X POST http://localhost:8000/start-pattern/flash_sale  
+
+# Fraud attack simulation (triggers real-time alerts)
+curl -X POST http://localhost:8000/start-pattern/fraud_attack
+
+# Stop any running pattern
+curl -X POST http://localhost:8000/stop-pattern
+```
+
+### **What You'll See**
+- **Real-time sales analytics** with live revenue tracking
+- **Fraud detection alerts** with risk scoring
+- **Performance metrics** showing 50K+ msg/sec processing  
+- **Interactive visualizations** updating in real-time
+- **System monitoring** with comprehensive dashboards
+
+### **5-Minute Demo Script**
+```bash
+# 1. Start with normal traffic
+curl -X POST http://localhost:8000/start-pattern/normal
+# → Visit http://localhost:3000 to see live sales data
+
+# 2. Simulate flash sale burst  
+curl -X POST http://localhost:8000/start-pattern/flash_sale
+# → Watch throughput spike and cart activity increase
+
+# 3. Demonstrate fraud detection
+curl -X POST http://localhost:8000/start-pattern/fraud_attack  
+# → See real-time fraud alerts with risk scores
+
+# 4. Check system monitoring
+# → Open http://localhost:3001 (admin/streamflow123)
+
+# 5. Clean up
+curl -X POST http://localhost:8000/stop-pattern
+docker-compose down
+```
+
+### **Troubleshooting**
+```bash
+# Check service status
+docker-compose ps
+
+# View logs
+docker-compose logs
+
+# Restart services
+docker-compose restart
+
+# Full reset
+docker-compose down && docker-compose up -d --build
+
+# Stop demo completely  
+docker-compose down -v
+```
 
 ## 🛠️ Quick Start
 
@@ -169,5 +247,3 @@ See [IMPLEMENTATION.md](IMPLEMENTATION.md) for detailed development information.
 MIT License - see [LICENSE](LICENSE) for details.
 
 ---
-
-**StreamFlow Engine** - Built with ❤️ for high-performance stream processing

@@ -120,6 +120,70 @@ curl -X POST http://localhost:8000/start-pattern/fraud_attack
 
 See `demo/README.md` and `demo/SCENARIOS.md` for detailed documentation and demonstration scenarios.
 
+### 🔄 Demo Architecture Evolution
+
+**Current Implementation (v1.0):**
+The demo currently uses a simplified architecture for maximum reliability and real-time responsiveness:
+```
+Simulator → WebSocket → Dashboard (Real-time)
+              ↓
+         Event Stream Stats (Live)
+         Sales Analytics (Live)
+```
+
+**Benefits:**
+- ✅ Immediate real-time updates with zero latency
+- ✅ 100% reliable demonstration (no pipeline dependencies)
+- ✅ Direct event-driven analytics calculations
+- ✅ Perfect for demo scenarios and presentations
+
+**Future Enhancement (v2.0) - Full Pipeline Integration:**
+
+For a complete StreamFlow platform demonstration, the architecture can be upgraded to:
+```
+Simulator → StreamFlow → Pipelines → Dashboard
+    ↓           ↓          ↓
+WebSocket   gRPC API   Analytics   Real-time
+Dashboard   Storage    Processing   Updates
+```
+
+**Upgrade Implementation Plan:**
+
+1. **Add gRPC Client to Simulator** (`demo/simulator/streamflow_client.py`):
+   ```python
+   # Publish events to both WebSocket AND StreamFlow
+   await self.publish_to_streamflow(event)  # NEW
+   await websocket_broadcaster.broadcast_event(event)  # Existing
+   ```
+
+2. **Enhanced Pipeline Processing** (`demo/pipelines/main.go`):
+   - Real-time sales aggregation with WebSocket broadcasting
+   - Advanced fraud detection with ML scoring
+   - Complex event pattern detection
+   - Historical analytics and trend analysis
+
+3. **Hybrid Dashboard Updates**:
+   - Immediate: WebSocket for event stream (sub-second updates)
+   - Comprehensive: Pipeline analytics (enriched 2-5 second updates)
+   - Best of both worlds: Real-time + Deep processing
+
+**Implementation Steps:**
+```bash
+# 1. Add StreamFlow publishing to simulator
+cd demo/simulator
+# Add grpc client and dual publishing
+
+# 2. Enable pipeline broadcasting  
+cd demo/pipelines
+# Add WebSocket sales/fraud broadcasts
+
+# 3. Update dashboard for hybrid data
+cd demo/dashboard
+# Combine WebSocket + Pipeline data
+```
+
+This upgrade would showcase the full StreamFlow platform capabilities while maintaining the current demo's responsiveness and reliability.
+
 ## 🛠️ Quick Start
 
 ### Prerequisites
@@ -866,6 +930,147 @@ docker-compose --profile monitoring up
 ### Phase 7-8: Demo & Production Deployment
 - Demo application with Python FastAPI simulator + React dashboard
 - Kubernetes deployment and production documentation
+
+ 🚀 Running the StreamFlow Engine Demo
+
+  Prerequisites
+
+  - Docker & Docker Compose (required)
+  - Go 1.24+ (optional, for local development)
+  - Node.js 18+ (optional, for local development)
+  - Python 3.11+ (optional, for local development)
+
+  Quick Start (Recommended)
+
+  1. Clone and Navigate
+
+  git clone https://github.com/Anujtr/streamflow-engine.git
+  cd streamflow-engine/demo
+
+  2. Start the Demo
+
+  # Start all services (takes 2-3 minutes first time)
+  ./start-demo.sh
+
+  OR manually:
+  # Build and start all services
+  docker-compose up -d --build
+
+  # Check status
+  docker-compose ps
+
+  3. Access the Demo
+
+  Once running, visit these interfaces:
+
+  | Service             | URL                          | Description                                 |
+  |---------------------|------------------------------|---------------------------------------------|
+  | 🎛️ React Dashboard | http://localhost:3000        | Main demo interface - real-time analytics   |
+  | 🎮 Event Simulator  | http://localhost:8000        | Control traffic patterns                    |
+  | 📊 Grafana          | http://localhost:3001        | Monitoring dashboards (admin/streamflow123) |
+  | 📈 Prometheus       | http://localhost:9091        | Raw metrics                                 |
+  | ⚙️ StreamFlow API   | http://localhost:8081/health | Engine health status                        |
+
+  Running Traffic Patterns
+
+  Start Different Scenarios:
+
+  # Normal e-commerce traffic (good for first demo)
+  curl -X POST http://localhost:8000/start-pattern/normal
+
+  # High-intensity flash sale
+  curl -X POST http://localhost:8000/start-pattern/flash_sale
+
+  # Fraud attack simulation (triggers alerts)
+  curl -X POST http://localhost:8000/start-pattern/fraud_attack
+
+  # Sustained peak hours traffic
+  curl -X POST http://localhost:8000/start-pattern/peak_hours
+
+  # Stop any running pattern
+  curl -X POST http://localhost:8000/stop-pattern
+
+  What You'll See
+
+  React Dashboard (localhost:3000)
+
+  - Real-time sales metrics (revenue, transactions, top products)
+  - Live fraud detection alerts with risk scores
+  - Geographic sales distribution
+  - Performance metrics (throughput, latency)
+  - Interactive charts updating in real-time
+
+  Traffic Patterns:
+
+  - Normal: 10-50 events/sec, realistic e-commerce mix
+  - Flash Sale: 100-500 events/sec bursts, high purchase rate
+  - Fraud Attack: Suspicious patterns, triggers fraud alerts
+  - Peak Hours: 50-200 events/sec sustained load
+
+  Demo Script (5-minute presentation)
+
+  # 1. Start with normal traffic
+  curl -X POST http://localhost:8000/start-pattern/normal
+  # → Show dashboard: live sales, revenue climbing
+
+  # 2. Simulate flash sale  
+  curl -X POST http://localhost:8000/start-pattern/flash_sale
+  # → Show throughput spike, cart/purchase activity
+
+  # 3. Demonstrate fraud detection
+  curl -X POST http://localhost:8000/start-pattern/fraud_attack
+  # → Show fraud alerts appearing, risk scores
+
+  # 4. Check monitoring
+  # → Open Grafana, show system metrics, performance
+
+  # 5. Stop demo
+  curl -X POST http://localhost:8000/stop-pattern
+
+  Troubleshooting
+
+  Services not starting:
+
+  # Check logs
+  docker-compose logs
+
+  # Restart specific service
+  docker-compose restart simulator
+
+  # Full reset
+  docker-compose down
+  docker-compose up -d --build
+
+  Port conflicts:
+
+  # Check what's using ports
+  netstat -tulpn | grep :3000
+  netstat -tulpn | grep :8000
+
+  # Kill conflicting processes
+  sudo lsof -ti:3000 | xargs kill -9
+
+  No data in dashboard:
+
+  # Verify traffic is running
+  curl http://localhost:8000/health
+
+  # Check StreamFlow is processing
+  curl http://localhost:8081/health
+
+  # Restart pipelines if needed
+  docker-compose restart pipelines
+
+  Stopping the Demo
+
+  # Stop all services
+  docker-compose down
+
+  # Remove volumes (clean slate)
+  docker-compose down -v
+
+  # Remove images (full cleanup)
+  docker-compose down --rmi all
 
 ## 🤝 Contributing
 

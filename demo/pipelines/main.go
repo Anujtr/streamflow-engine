@@ -127,7 +127,7 @@ var demoState = &DemoState{
 func main() {
 	var (
 		streamflowHost = flag.String("streamflow-host", "localhost", "StreamFlow host")
-		streamflowPort = flag.Int("streamflow-port", 9090, "StreamFlow gRPC port")
+		streamflowPort = flag.Int("streamflow-port", 8080, "StreamFlow gRPC port")
 		httpPort       = flag.Int("http-port", 8080, "HTTP server port for WebSocket")
 		consumerGroup  = flag.String("consumer-group", "demo-analytics", "Consumer group name")
 	)

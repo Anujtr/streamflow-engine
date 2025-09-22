@@ -52,7 +52,7 @@ sleep 30
 
 # Check service health
 echo "🏥 Checking service health..."
-services=("streamflow:8080" "simulator:8000" "pipelines:8080")
+services=("streamflow:8081" "simulator:8000" "pipelines:8081")
 all_healthy=true
 
 for service in "${services[@]}"; do
@@ -72,7 +72,7 @@ if [ "$all_healthy" = true ]; then
     echo ""
     echo "📱 React Dashboard:    http://localhost:3000"
     echo "🎛️  Event Simulator:   http://localhost:8000"
-    echo "⚙️  StreamFlow Engine: http://localhost:8080"
+    echo "⚙️  StreamFlow Engine: http://localhost:8080 (gRPC), http://localhost:8081 (HTTP/metrics)"
     echo "📊 Grafana:           http://localhost:3001 (admin/streamflow123)"
     echo "📈 Prometheus:        http://localhost:9091"
     echo ""

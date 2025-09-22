@@ -3,6 +3,7 @@ FastAPI application for StreamFlow Engine demo simulator
 """
 import asyncio
 import json
+import os
 from datetime import datetime
 from typing import Dict, List, Optional
 from contextlib import asynccontextmanager
@@ -95,7 +96,10 @@ class WebSocketBroadcaster:
 
 # Global instances
 event_generator = EventGenerator()
-streamflow_client = StreamFlowClient()
+streamflow_client = StreamFlowClient(
+    host=os.getenv("STREAMFLOW_HOST", "localhost"),
+    port=int(os.getenv("STREAMFLOW_PORT", "9090"))
+)
 websocket_broadcaster = WebSocketBroadcaster()
 current_task: Optional[asyncio.Task] = None
 
@@ -315,16 +319,16 @@ async def start_pattern(pattern_name: str):
     
     # Start stats broadcasting
     async def broadcast_stats():
-        while not current_task.done():
+        while current_task and not current_task.done():
             stats = event_generator.get_statistics()
             await websocket_broadcaster.broadcast_stats(stats)
             await asyncio.sleep(2)  # Update every 2 seconds
     
     # Run both tasks concurrently
-    current_task = asyncio.create_task(asyncio.gather(
+    current_task = asyncio.gather(
         run_pattern_with_streamflow(),
         broadcast_stats()
-    ))
+    )
     
     return {
         "status": "started",

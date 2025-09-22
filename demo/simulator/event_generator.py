@@ -205,16 +205,50 @@ class EventGenerator:
                 
                 session.cart_items.clear()  # Empty cart after purchase
                 
-                return EcommerceEvent(
-                    **base_event_data,
-                    quantity=len(purchased_items),
-                    metadata={
-                        "total_amount": total_amount,
-                        "items": purchased_items,
-                        "payment_method": "credit_card" if not is_fraud else random.choice(["stolen_card", "fake_account"]),
-                        **(base_event_data.get("metadata", {}))
-                    }
-                )
+                # Merge metadata properly to avoid keyword conflict
+                purchase_metadata = {
+                    "total_amount": total_amount,
+                    "items": purchased_items,
+                    "payment_method": "credit_card" if not is_fraud else random.choice(["stolen_card", "fake_account"]),
+                    **(base_event_data.get("metadata", {}))
+                }
+                event_data = {**base_event_data}
+                event_data["metadata"] = purchase_metadata
+                event_data["quantity"] = len(purchased_items)
+                return EcommerceEvent(**event_data)
+            else:
+                # Generate purchase event for single random product when cart is empty
+                product = random.choice(self.products)
+                quantity = random.randint(1, 2) if not is_fraud else random.randint(5, 15)
+                total_amount = product.price * quantity
+                
+                # Fraud: unusually high amounts
+                if is_fraud:
+                    total_amount *= random.uniform(3, 10)
+                
+                # Create single item purchase
+                purchased_items = [{
+                    "product_id": product.product_id,
+                    "quantity": quantity,
+                    "price": product.price,
+                    "total": total_amount
+                }]
+                
+                # Merge metadata properly to avoid keyword conflict
+                purchase_metadata = {
+                    "total_amount": total_amount,
+                    "items": purchased_items,
+                    "payment_method": "credit_card" if not is_fraud else random.choice(["stolen_card", "fake_account"]),
+                    **(base_event_data.get("metadata", {}))
+                }
+                event_data = {**base_event_data}
+                event_data["metadata"] = purchase_metadata
+                event_data["product_id"] = product.product_id
+                event_data["product_name"] = product.name
+                event_data["product_category"] = product.category
+                event_data["product_price"] = product.price
+                event_data["quantity"] = quantity
+                return EcommerceEvent(**event_data)
         
         elif event_type == EventType.SEARCH:
             query = random.choice(SAMPLE_SEARCH_QUERIES)
@@ -230,24 +264,26 @@ class EventGenerator:
         elif event_type == EventType.USER_LOGIN:
             # Fraud: multiple rapid logins, suspicious locations
             if is_fraud:
-                base_event_data["metadata"] = {
+                login_metadata = {
                     "login_attempts": random.randint(5, 20),
                     "suspicious_ip": True,
                     "location_mismatch": True,
                     **(base_event_data.get("metadata", {}))
                 }
+                base_event_data["metadata"] = login_metadata
             
             return EcommerceEvent(**base_event_data)
         
         elif event_type == EventType.USER_REGISTRATION:
-            return EcommerceEvent(
-                **base_event_data,
-                metadata={
-                    "registration_source": random.choice(["organic", "referral", "advertisement"]),
-                    "email_verified": not is_fraud,  # Fraud: unverified emails
-                    **(base_event_data.get("metadata", {}))
-                }
-            )
+            # Merge metadata properly to avoid keyword conflict
+            registration_metadata = {
+                "registration_source": random.choice(["organic", "referral", "advertisement"]),
+                "email_verified": not is_fraud,  # Fraud: unverified emails
+                **(base_event_data.get("metadata", {}))
+            }
+            event_data = {**base_event_data}
+            event_data["metadata"] = registration_metadata
+            return EcommerceEvent(**event_data)
         
         return None
     

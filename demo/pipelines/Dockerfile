@@ -2,15 +2,15 @@ FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Copy go mod files
-COPY ../../go.mod ../../go.sum ./
+# Copy go mod files 
+COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code
-COPY ../../internal ./internal
-COPY . ./demo/pipelines
-
-WORKDIR /app/demo/pipelines
+# Copy source code  
+COPY internal ./internal
+COPY api ./api
+COPY pkg ./pkg
+COPY demo/pipelines .
 
 # Build the application
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o pipelines .
@@ -22,7 +22,7 @@ RUN apk --no-cache add ca-certificates curl
 WORKDIR /root/
 
 # Copy binary from builder stage
-COPY --from=builder /app/demo/pipelines/pipelines .
+COPY --from=builder /app/pipelines .
 
 # Expose port
 EXPOSE 8080

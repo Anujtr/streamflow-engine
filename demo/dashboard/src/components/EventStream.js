@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-const EventStream = ({ events = [] }) => {
+const EventStream = ({ events = [], eventStats = { totalEvents: 0, eventTypeCounters: {} } }) => {
   const [filter, setFilter] = useState('all');
   const [isPaused, setIsPaused] = useState(false);
   const [displayedEvents, setDisplayedEvents] = useState([]);
@@ -99,15 +99,8 @@ const EventStream = ({ events = [] }) => {
     }
   };
 
-  const getEventStats = () => {
-    const stats = {};
-    displayedEvents.forEach(event => {
-      stats[event.event_type] = (stats[event.event_type] || 0) + 1;
-    });
-    return stats;
-  };
-
-  const stats = getEventStats();
+  // Use cumulative stats from props instead of calculating from buffer
+  const { totalEvents, eventTypeCounters } = eventStats;
 
   return (
     <div>
@@ -132,19 +125,19 @@ const EventStream = ({ events = [] }) => {
           <div className="stats-row">
             <div className="stat-item">
               <span className="stat-label">Total Events:</span>
-              <span className="stat-value">{displayedEvents.length}</span>
+              <span className="stat-value">{totalEvents}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Purchases:</span>
-              <span className="stat-value">{stats.purchase || 0}</span>
+              <span className="stat-value">{eventTypeCounters.purchase || 0}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Cart Adds:</span>
-              <span className="stat-value">{stats.add_to_cart || 0}</span>
+              <span className="stat-value">{eventTypeCounters.add_to_cart || 0}</span>
             </div>
             <div className="stat-item">
               <span className="stat-label">Page Views:</span>
-              <span className="stat-value">{stats.page_view || 0}</span>
+              <span className="stat-value">{eventTypeCounters.page_view || 0}</span>
             </div>
           </div>
         </div>
@@ -159,9 +152,9 @@ const EventStream = ({ events = [] }) => {
                 onClick={() => setFilter(type)}
               >
                 {getFilterLabel(type)}
-                {type === 'all' ? ` (${displayedEvents.length})` : 
+                {type === 'all' ? ` (${totalEvents})` : 
                  type === 'suspicious' ? ` (${displayedEvents.filter(isSuspiciousEvent).length})` :
-                 ` (${stats[type] || 0})`}
+                 ` (${eventTypeCounters[type] || 0})`}
               </button>
             ))}
           </div>
@@ -196,14 +189,14 @@ const EventStream = ({ events = [] }) => {
                         {getEventIcon(event.event_type)}
                       </span>
                       <span className="event-type">
-                        {event.event_type.replace('_', ' ')}
+                        {event.event_type && typeof event.event_type === 'string' ? event.event_type.replace('_', ' ') : 'Unknown'}
                       </span>
                       {isSuspiciousEvent(event) && (
                         <span className="suspicious-badge">🚨 SUSPICIOUS</span>
                       )}
                     </div>
                     <span className="event-time">
-                      {formatTimestamp(event.timestamp)}
+                      {event.timestamp ? formatTimestamp(event.timestamp) : 'N/A'}
                     </span>
                   </div>
 
@@ -211,19 +204,21 @@ const EventStream = ({ events = [] }) => {
                     <div className="event-details">
                       <div className="detail-group">
                         <span className="detail-label">User:</span>
-                        <span className="detail-value">{event.user_id}</span>
+                        <span className="detail-value">{event.user_id || 'Unknown'}</span>
                       </div>
                       <div className="detail-group">
                         <span className="detail-label">Session:</span>
-                        <span className="detail-value">{event.session_id.substring(0, 8)}...</span>
+                        <span className="detail-value">
+                          {event.session_id && typeof event.session_id === 'string' ? event.session_id.substring(0, 8) + '...' : 'N/A'}
+                        </span>
                       </div>
                       <div className="detail-group">
                         <span className="detail-label">Location:</span>
-                        <span className="detail-value">{event.location}</span>
+                        <span className="detail-value">{event.location || 'Unknown'}</span>
                       </div>
                       <div className="detail-group">
                         <span className="detail-label">Device:</span>
-                        <span className="detail-value">{event.device_type}</span>
+                        <span className="detail-value">{event.device_type || 'Unknown'}</span>
                       </div>
                     </div>
 

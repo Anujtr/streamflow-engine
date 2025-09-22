@@ -75,8 +75,8 @@ const FraudDetection = ({ alerts = [] }) => {
             </div>
             <div className="detail-row">
               <span className="detail-label">Severity:</span>
-              <span className={`detail-value severity-${alert.severity}`}>
-                {alert.severity.toUpperCase()}
+              <span className={`detail-value severity-${alert.severity || 'unknown'}`}>
+                {alert.severity ? alert.severity.toUpperCase() : 'UNKNOWN'}
               </span>
             </div>
             <div className="detail-row">
@@ -111,8 +111,8 @@ const FraudDetection = ({ alerts = [] }) => {
                           Price: ${event.product_price}
                         </span>
                       )}
-                      <span className="event-detail">Location: {event.location}</span>
-                      <span className="event-detail">Device: {event.device_type}</span>
+                      <span className="event-detail">Location: {event.location || 'Unknown'}</span>
+                      <span className="event-detail">Device: {event.device_type || 'Unknown'}</span>
                     </div>
                   </div>
                 ))}

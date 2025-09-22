@@ -2,8 +2,11 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, 
          BarChart, Bar, PieChart, Pie, Cell } from 'recharts';
 
-const SalesMetrics = ({ data }) => {
-  if (!data) {
+const SalesMetrics = ({ data, realTimeSales = { totalRevenue: 0, transactionCount: 0, averageOrderValue: 0, revenueTimeline: [], topProducts: {}, salesByLocation: {}, salesByCategory: {} } }) => {
+  // Use real-time data as primary source, fallback to pipelines data if available
+  const hasRealTimeData = realTimeSales.transactionCount > 0;
+  
+  if (!hasRealTimeData && !data) {
     return (
       <div>
         <div className="component-header">
@@ -12,21 +15,40 @@ const SalesMetrics = ({ data }) => {
         </div>
         <div className="loading">
           <div className="spinner"></div>
-          Loading sales data...
+          Start generating traffic to see real-time sales data...
         </div>
       </div>
     );
   }
 
+  // Use real-time data when available, otherwise fall back to pipelines data
+  const effectiveData = hasRealTimeData ? {
+    total_revenue: realTimeSales.totalRevenue,
+    transaction_count: realTimeSales.transactionCount,
+    average_order_value: realTimeSales.averageOrderValue,
+    top_products: Object.values(realTimeSales.topProducts).sort((a, b) => b.revenue - a.revenue),
+    sales_by_category: Object.values(realTimeSales.salesByCategory).sort((a, b) => b.revenue - a.revenue),
+    sales_by_location: Object.values(realTimeSales.salesByLocation).sort((a, b) => b.revenue - a.revenue),
+    revenue_timeline: realTimeSales.revenueTimeline
+  } : {
+    total_revenue: data?.total_revenue || 0,
+    transaction_count: data?.transaction_count || 0,
+    average_order_value: data?.average_order_value || 0,
+    top_products: data?.top_products || [],
+    sales_by_category: data?.sales_by_category || [],
+    sales_by_location: data?.sales_by_location || [],
+    revenue_timeline: data?.revenue_timeline || []
+  };
+
   const {
-    total_revenue = 0,
-    transaction_count = 0,
-    average_order_value = 0,
-    top_products = [],
-    sales_by_category = [],
-    sales_by_location = [],
-    revenue_timeline = []
-  } = data;
+    total_revenue,
+    transaction_count,
+    average_order_value,
+    top_products,
+    sales_by_category,
+    sales_by_location,
+    revenue_timeline
+  } = effectiveData;
 
   // Format numbers for display
   const formatCurrency = (value) => {
@@ -62,9 +84,9 @@ const SalesMetrics = ({ data }) => {
 
   // Prepare top products data
   const productData = top_products.slice(0, 5).map(product => ({
-    name: product.product_name.substring(0, 15) + '...',
-    revenue: product.revenue,
-    units: product.units
+    name: product.product_name && typeof product.product_name === 'string' ? product.product_name.substring(0, 15) + '...' : 'Unknown Product',
+    revenue: product.revenue || 0,
+    units: product.units || 0
   }));
 
   return (
@@ -73,7 +95,7 @@ const SalesMetrics = ({ data }) => {
         <span className="icon">💰</span>
         <h2>Sales Analytics</h2>
         <div className="last-updated">
-          Last updated: {new Date(data.last_updated).toLocaleTimeString()}
+          {hasRealTimeData ? 'Real-time data' : `Last updated: ${new Date(data?.last_updated || new Date()).toLocaleTimeString()}`}
         </div>
       </div>
 
@@ -82,14 +104,23 @@ const SalesMetrics = ({ data }) => {
         <div className="stat-card">
           <div className="stat-value">{formatCurrency(total_revenue)}</div>
           <div className="stat-label">Total Revenue</div>
+          {hasRealTimeData && (
+            <div className="stat-delta">Live Updates</div>
+          )}
         </div>
         <div className="stat-card">
           <div className="stat-value">{formatNumber(transaction_count)}</div>
           <div className="stat-label">Transactions</div>
+          {hasRealTimeData && (
+            <div className="stat-delta">Live Updates</div>
+          )}
         </div>
         <div className="stat-card">
           <div className="stat-value">{formatCurrency(average_order_value)}</div>
           <div className="stat-label">Avg Order Value</div>
+          {hasRealTimeData && (
+            <div className="stat-delta">Live Updates</div>
+          )}
         </div>
       </div>
 
@@ -276,6 +307,13 @@ const SalesMetrics = ({ data }) => {
         .location-orders {
           font-size: 0.875rem;
           color: #6c757d;
+        }
+
+        .stat-delta {
+          font-size: 0.75rem;
+          color: #28a745;
+          font-weight: 600;
+          margin-top: 0.25rem;
         }
 
         @media (max-width: 768px) {

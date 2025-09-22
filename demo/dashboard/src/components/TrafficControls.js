@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const TrafficControls = ({ onPatternChange, currentPattern }) => {
+const TrafficControls = ({ onPatternChange, currentPattern, onClearEvents }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const patterns = [
@@ -37,6 +37,11 @@ const TrafficControls = ({ onPatternChange, currentPattern }) => {
   const startPattern = async (patternName) => {
     setIsLoading(true);
     try {
+      // Clear existing events before starting new pattern
+      if (onClearEvents) {
+        onClearEvents();
+      }
+      
       const response = await fetch(`http://localhost:8000/start-pattern/${patternName}`, {
         method: 'POST',
       });

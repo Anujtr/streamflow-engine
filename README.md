@@ -7,6 +7,8 @@
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat&logo=docker)](https://www.docker.com/)
 
 StreamFlow Engine is a distributed stream processing system built for developers who need to process high-volume real-time data with minimal latency. Whether you're building analytics pipelines, fraud detection systems, or real-time dashboards, StreamFlow provides the performance and reliability you need.
+<img width="1665" height="1006" alt="Screenshot 2025-09-22 at 2 25 43 PM" src="https://github.com/user-attachments/assets/000d68ae-8e28-4256-88d6-cba9a9e28af5" />
+
 
 ## ✨ Why StreamFlow?
 
@@ -15,6 +17,7 @@ StreamFlow Engine is a distributed stream processing system built for developers
 - **Production Ready** - Built-in persistence, monitoring, and fault tolerance
 - **Easy Deployment** - Docker support with monitoring stack included
 - **Real-time Processing** - Advanced windowing, joins, and pattern detection
+<img width="1663" height="878" alt="Screenshot 2025-09-22 at 2 25 31 PM" src="https://github.com/user-attachments/assets/0eef0858-c671-4c4e-a1b9-3984fbb6fcda" />
 
 ## 🎯 Try the Demo
 
@@ -43,6 +46,7 @@ Once running, access these live interfaces:
 | **🎮 Traffic Control** | http://localhost:8000 | Event simulation controls |
 | **📊 Monitoring** | http://localhost:3001 | Grafana dashboards (admin/streamflow123) |
 | **📈 Metrics** | http://localhost:9091 | Prometheus metrics |
+<img width="1680" height="1011" alt="Screenshot 2025-09-22 at 2 25 03 PM" src="https://github.com/user-attachments/assets/442986f6-2f30-443f-ada5-48ff397ad3cf" />
 
 ### **Run Traffic Patterns**
 ```bash

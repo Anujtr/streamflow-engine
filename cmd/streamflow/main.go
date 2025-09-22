@@ -32,7 +32,7 @@ func main() {
 	var (
 		port        = flag.String("port", "8080", "Port to listen on")
 		httpPort    = flag.String("http-port", "8081", "HTTP port for metrics and health endpoints")
-		host        = flag.String("host", "localhost", "Host to bind to")
+		host        = flag.String("host", "0.0.0.0", "Host to bind to")
 		dataDir     = flag.String("data-dir", "./data", "Data directory for persistent storage")
 		persistent  = flag.Bool("persistent", true, "Enable persistent storage with Pebble")
 		enableEtcd  = flag.Bool("etcd", false, "Enable etcd for leader election")

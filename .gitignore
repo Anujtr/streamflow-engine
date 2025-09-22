@@ -33,6 +33,8 @@ go.work.sum
 implementation-plan.md
 CLAUDE.md
 PHASE3_ISSUES.md
+IMPLEMENTATION.md
+PHASE6_COMPLETED.md
 
 venv/
 
@@ -58,3 +60,12 @@ dist/
 
 # Pytest cache
 .pytest_cache/
+
+./node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+node_modules/
+demo/dashboard/node_modules
